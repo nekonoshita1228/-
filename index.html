@@ -1,0 +1,354 @@
+from pathlib import Path
+
+html = r"""<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>謎解きチャット デモ</title>
+<style>
+  :root{
+    --bg:#0d0f13;
+    --panel:#151922;
+    --panel2:#1d2430;
+    --text:#f4f6f8;
+    --muted:#9aa4b2;
+    --accent:#61d7ff;
+    --danger:#ff8a8a;
+    --ok:#8ff0b3;
+    --line:#2b3442;
+  }
+
+  * { box-sizing: border-box; }
+
+  body{
+    margin:0;
+    min-height:100dvh;
+    background:
+      radial-gradient(circle at 15% 15%, rgba(97,215,255,.09), transparent 32%),
+      radial-gradient(circle at 85% 80%, rgba(97,215,255,.05), transparent 28%),
+      var(--bg);
+    color:var(--text);
+    font-family:
+      -apple-system, BlinkMacSystemFont, "Segoe UI",
+      "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  }
+
+  .app{
+    width:min(100%, 520px);
+    min-height:100dvh;
+    margin:0 auto;
+    background:rgba(13,15,19,.88);
+    display:flex;
+    flex-direction:column;
+  }
+
+  header{
+    position:sticky;
+    top:0;
+    z-index:10;
+    padding:14px 16px;
+    border-bottom:1px solid var(--line);
+    background:rgba(13,15,19,.94);
+    backdrop-filter:blur(12px);
+  }
+
+  .title{
+    font-size:15px;
+    font-weight:700;
+    letter-spacing:.04em;
+  }
+
+  .status{
+    margin-top:3px;
+    font-size:12px;
+    color:var(--muted);
+  }
+
+  #chat{
+    flex:1;
+    padding:18px 14px 150px;
+    overflow-y:auto;
+  }
+
+  .row{
+    display:flex;
+    margin:10px 0;
+    animation:pop .2s ease-out both;
+  }
+
+  .row.system{ justify-content:flex-start; }
+  .row.user{ justify-content:flex-end; }
+
+  .bubble{
+    max-width:82%;
+    padding:11px 13px;
+    line-height:1.65;
+    border-radius:16px;
+    font-size:15px;
+    white-space:pre-wrap;
+    word-break:break-word;
+  }
+
+  .system .bubble{
+    background:var(--panel2);
+    border:1px solid var(--line);
+    border-bottom-left-radius:5px;
+  }
+
+  .user .bubble{
+    background:#123243;
+    border:1px solid #1e536c;
+    border-bottom-right-radius:5px;
+  }
+
+  .bubble.error{
+    border-color:#6b3232;
+    background:#2d1719;
+  }
+
+  .bubble.success{
+    border-color:#315f43;
+    background:#163123;
+  }
+
+  .speaker{
+    font-size:11px;
+    color:var(--muted);
+    margin:0 0 4px 4px;
+  }
+
+  .composer-wrap{
+    position:fixed;
+    left:50%;
+    bottom:0;
+    transform:translateX(-50%);
+    width:min(100%, 520px);
+    padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+    background:linear-gradient(to top, rgba(13,15,19,1) 70%, rgba(13,15,19,.92));
+    border-top:1px solid var(--line);
+  }
+
+  .composer{
+    display:flex;
+    gap:8px;
+    align-items:center;
+  }
+
+  input{
+    flex:1;
+    min-width:0;
+    height:46px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:#10141b;
+    color:var(--text);
+    padding:0 14px;
+    font-size:16px; /* iPhoneの自動ズーム回避 */
+    outline:none;
+  }
+
+  input:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(97,215,255,.10);
+  }
+
+  button{
+    height:46px;
+    padding:0 16px;
+    border:0;
+    border-radius:14px;
+    background:var(--accent);
+    color:#06131a;
+    font-weight:800;
+    cursor:pointer;
+    font-size:14px;
+  }
+
+  button:disabled{
+    opacity:.45;
+    cursor:default;
+  }
+
+  .hint{
+    margin-top:8px;
+    font-size:11px;
+    color:var(--muted);
+    text-align:center;
+  }
+
+  @keyframes pop{
+    from{opacity:0; transform:translateY(5px)}
+    to{opacity:1; transform:translateY(0)}
+  }
+
+  @media (min-width:700px){
+    body{ padding:24px 0; }
+    .app{
+      min-height:calc(100dvh - 48px);
+      border:1px solid var(--line);
+      border-radius:24px;
+      overflow:hidden;
+      box-shadow:0 28px 80px rgba(0,0,0,.35);
+    }
+    .composer-wrap{
+      bottom:24px;
+      border-left:1px solid var(--line);
+      border-right:1px solid var(--line);
+      border-bottom-left-radius:24px;
+      border-bottom-right-radius:24px;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="title">謎解きチャット・試作</div>
+    <div class="status">ブラウザ版 / スマホ対応</div>
+  </header>
+
+  <main id="chat" aria-live="polite"></main>
+</div>
+
+<div class="composer-wrap">
+  <form class="composer" id="answerForm">
+    <input
+      id="answer"
+      type="text"
+      autocomplete="off"
+      autocapitalize="off"
+      spellcheck="false"
+      placeholder="答えを入力"
+      aria-label="答え"
+    >
+    <button id="sendBtn" type="submit">送信</button>
+  </form>
+  <div class="hint">デモ用の正解：荼毘の正体は？</div>
+</div>
+
+<script>
+  // ===== ここだけ差し替えれば内容を変更できます =====
+  const ACCEPTED_ANSWERS = ["燈矢", "轟燈矢","とうや"];
+
+  // 仮台詞です。あとでユーザーさん作の台詞に丸ごと差し替えできます。
+  const WRONG_REPLIES = [
+    "すげえなァ、なーんにも見えてねえ",
+    "ゴミか。付せろ",
+    "ハッ、てめえも俺と同じ失敗作だ。仲良くやろうぜ"
+  ];
+
+  const INTRO_MESSAGES = [
+    "来たか、ヒーロー",
+    "随分遅かったな。羽を伸ばしすぎだ。当然もう答えは分かるな？　",
+    "入力して送れ"
+  ];
+
+  const CORRECT_REPLY = "正解。期待してるよ";
+  // ============================================
+
+  const chat = document.getElementById("chat");
+  const form = document.getElementById("answerForm");
+  const input = document.getElementById("answer");
+  const sendBtn = document.getElementById("sendBtn");
+
+  function normalize(text){
+    return text
+      .trim()
+      .toLowerCase()
+      .normalize("NFKC")
+      .replace(/\s+/g, "");
+  }
+
+  function addBubble(text, type="system", state=""){
+    const row = document.createElement("div");
+    row.className = `row ${type}`;
+
+    const wrap = document.createElement("div");
+
+    if(type === "system"){
+      const speaker = document.createElement("div");
+      speaker.className = "speaker";
+      speaker.textContent = "荼毘";
+      wrap.appendChild(speaker);
+    }
+
+    const bubble = document.createElement("div");
+    bubble.className = `bubble ${state}`;
+    bubble.textContent = text;
+
+    wrap.appendChild(bubble);
+    row.appendChild(wrap);
+    chat.appendChild(row);
+
+    requestAnimationFrame(() => {
+      chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" });
+    });
+  }
+
+  async function showIntro(){
+    for(const msg of INTRO_MESSAGES){
+      await wait(380);
+      addBubble(msg);
+    }
+  }
+
+  function wait(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const raw = input.value;
+    if(!raw.trim()) return;
+
+    addBubble(raw, "user");
+    input.value = "";
+    sendBtn.disabled = true;
+    input.disabled = true;
+
+    await wait(450);
+
+    const answer = normalize(raw);
+    const isCorrect = ACCEPTED_ANSWERS.some(a => normalize(a) === answer);
+
+    if(isCorrect){
+      addBubble(CORRECT_REPLY, "system", "success");
+
+      await wait(450);
+
+      const next = document.createElement("div");
+      next.className = "row system";
+      next.innerHTML = `
+        <div>
+          <div class="speaker">SYSTEM</div>
+          <div class="bubble success">
+            <strong>第1問クリア</strong><br>
+            ここに「次の展示を見る」ボタンやリンクを出せます。
+          </div>
+        </div>
+      `;
+      chat.appendChild(next);
+      chat.scrollTo({top: chat.scrollHeight, behavior:"smooth"});
+
+      input.placeholder = "クリア済み";
+    }else{
+      const reply = WRONG_REPLIES[Math.floor(Math.random() * WRONG_REPLIES.length)];
+      addBubble(reply, "system", "error");
+
+      sendBtn.disabled = false;
+      input.disabled = false;
+      input.focus();
+    }
+  });
+
+  showIntro();
+</script>
+</body>
+</html>
+"""
+
+path = Path("/mnt/data/nazo_chat_demo.html")
+path.write_text(html, encoding="utf-8")
+print(f"Created: {path}")
