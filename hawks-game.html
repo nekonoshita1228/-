@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ホークス飛行ゲーム</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: sans-serif;
+    background: #bfe9ff;
+    touch-action: none;
+    user-select: none;
+}
+
+/* =========================
+   ゲーム画面
+========================= */
+
+#game {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+
+    /* ここに 背景.png を入れるよ */
+    background-image: url("背景.png");
+    background-size: cover;
+    background-position: center;
+}
+
+/* 背景画像がまだない間の説明 */
+#background-label {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+
+    padding: 8px 12px;
+    border-radius: 8px;
+
+    background: rgba(255,255,255,0.7);
+    color: #24617d;
+
+    font-size: 14px;
+
+    z-index: 1;
+}
+
+
+/* =========================
+   ホークス
+========================= */
+
+#hawks {
+    position: absolute;
+
+    left: 18%;
+    top: 50%;
+
+    width: 110px;
+    height: 110px;
+
+    transform: translate(-50%, -50%);
+
+    z-index: 10;
+}
+
+#hawks img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* 画像がないときの仮表示 */
+
+.placeholder {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+
+    border: 2px dashed #555;
+    border-radius: 10px;
+
+    background: rgba(255,255,255,0.85);
+
+    font-size: 12px;
+}
+
+
+/* =========================
+   蒼い炎
+========================= */
+
+.flame {
+    position: absolute;
+
+    width: 75px;
+    height: 90px;
+
+    z-index: 8;
+}
+
+.flame img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+
+/* =========================
+   鞄
+========================= */
+
+#bag {
+    position: absolute;
+
+    width: 90px;
+    height: 70px;
+
+    display: none;
+
+    z-index: 9;
+}
+
+#bag img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+
+/* =========================
+   HUD
+========================= */
+
+#hud {
+    position: absolute;
+
+    top: 15px;
+    left: 15px;
+    right: 15px;
+
+    display: flex;
+    justify-content: space-between;
+
+    z-index: 50;
+
+    font-weight: bold;
+
+    color: #16394d;
+}
+
+.hud-box {
+
+    padding: 8px 14px;
+
+    background: rgba(255,255,255,0.8);
+
+    border-radius: 12px;
+}
+
+
+/* =========================
+   m / t 表示
+========================= */
+
+#letters {
+
+    position: absolute;
+
+    top: 40%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
+
+    font-size: 90px;
+    font-weight: bold;
+
+    letter-spacing: 40px;
+
+    color: white;
+
+    text-shadow:
+        3px 3px 0 #333,
+        -3px -3px 0 #333,
+        3px -3px 0 #333,
+        -3px 3px 0 #333;
+
+    display: none;
+
+    z-index: 100;
+}
+
+
+/* =========================
+   開始・クリア・ゲームオーバー
+========================= */
+
+.overlay {
+
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(20,50,70,0.65);
+
+    color: white;
+
+    z-index: 200;
+
+    text-align: center;
+}
+
+.overlay h1 {
+    font-size: 42px;
+}
+
+.overlay p {
+    line-height: 1.8;
+}
+
+button {
+
+    padding: 14px 30px;
+
+    border: none;
+
+    border-radius: 12px;
+
+    font-size: 18px;
+
+    cursor: pointer;
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div id="game">
+
+    <!-- ここに背景.pngを入れるよ -->
+    <div id="background-label">
+        ここに 背景.png を入れるよ
+    </div>
+
+
+    <!-- =========================
+         ホークス
+         ここに
+         ホークスの横向き絵.png
+         を入れるよ
+    ========================== -->
+
+    <div id="hawks">
+
+        <img
+            src="ホークスの横向き絵.png"
+            id="hawks-img"
+        >
+
+        <div
+            class="placeholder"
+            id="hawks-placeholder"
+        >
+            ここに<br>
+            ホークスの横向き絵.png
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         鞄
+         ここに 鞄.png を入れるよ
+    ========================== -->
+
+    <div id="bag">
+
+        <img
+            src="鞄.png"
+            id="bag-img"
+        >
+
+        <div
+            class="placeholder"
+            id="bag-placeholder"
+        >
+            ここに<br>
+            鞄.png
+        </div>
+
+    </div>
+
+
+    <!-- m と t -->
+
+    <div id="letters">
+        m t
+    </div>
+
+
+    <!-- HUD -->
+
+    <div id="hud">
+
+        <div class="hud-box">
+            LIFE：
+            <span id="life">3</span>
+        </div>
+
+        <div class="hud-box">
+            TIME：
+            <span id="time">45</span>
+        </div>
+
+    </div>
+
+
+    <!-- 開始画面 -->
+
+    <div class="overlay" id="start-screen">
+
+        <h1>FLY!</h1>
+
+        <p>
+            押している間：上昇<br>
+            離す：下降<br><br>
+
+            PC：クリック / Space<br>
+            スマホ：画面タッチ
+        </p>
+
+        <button id="start-button">
+            START
+        </button>
+
+    </div>
+
+
+    <!-- 結果画面 -->
+
+    <div
+        class="overlay"
+        id="result-screen"
+        style="display:none;"
+    >
+
+        <h1 id="result-title"></h1>
+
+        <p id="result-text"></p>
+
+        <button onclick="location.reload()">
+            RETRY
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================
+   基本設定
+========================================= */
+
+const game = document.getElementById("game");
+
+const hawks = document.getElementById("hawks");
+
+const bag = document.getElementById("bag");
+
+const letters = document.getElementById("letters");
+
+const lifeText = document.getElementById("life");
+
+const timeText = document.getElementById("time");
+
+
+let running = false;
+
+let pressing = false;
+
+
+/* ホークスの位置 */
+
+let hawksY;
+
+
+/* 上下速度 */
+
+let velocityY = 0;
+
+
+/* 重力 */
+
+const gravity = 0.32;
+
+
+/* 押している間の上昇力 */
+
+const lift = -0.55;
+
+
+/* 最大落下速度 */
+
+const maxFall = 6;
+
+
+/* ライフ */
+
+let life = 3;
+
+
+/* ゲーム時間
+   45秒くらいなので、
+   1分以内で終わります
+*/
+
+const gameLength = 45;
+
+let remainingTime = gameLength;
+
+
+/* 鞄を取ったか */
+
+let bagCollected = false;
+
+
+/* 炎 */
+
+let flames = [];
+
+
+/* =========================================
+   画像が存在しない場合、
+   「ここに画像を入れるよ」を表示
+========================================= */
+
+
+function setupImageFallback(imgID, placeholderID) {
+
+    const img =
+        document.getElementById(imgID);
+
+    const placeholder =
+        document.getElementById(placeholderID);
+
+
+    img.onload = () => {
+
+        placeholder.style.display = "none";
+
+    };
+
+
+    img.onerror = () => {
+
+        img.style.display = "none";
+
+        placeholder.style.display = "flex";
+
+    };
+
+}
+
+
+setupImageFallback(
+    "hawks-img",
+    "hawks-placeholder"
+);
+
+
+setupImageFallback(
+    "bag-img",
+    "bag-placeholder"
+);
+
+
+/* =========================================
+   蒼い炎を作る
+========================================= */
+
+
+function createFlame() {
+
+    if (!running) return;
+
+
+    const flame =
+        document.createElement("div");
+
+
+    flame.className = "flame";
+
+
+    /* ここに 蒼い炎.png を入れるよ */
+
+    flame.innerHTML = `
+
+        <img
+            src="蒼い炎.png"
+            onerror="
+                this.style.display='none';
+                this.nextElementSibling.style.display='flex';
+            "
+        >
+
+        <div
+            class="placeholder"
+            style="
+                display:none;
+                color:#0066cc;
+            "
+        >
+            ここに<br>
+            蒼い炎.png
+        </div>
+
+    `;
+
+
+    /*
+      上すぎ・下すぎない位置に出現
+    */
+
+    const minY =
+        game.clientHeight * 0.18;
+
+    const maxY =
+        game.clientHeight * 0.82;
+
+
+    const y =
+        minY +
+        Math.random() *
+        (maxY - minY);
+
+
+    flame.style.left =
+        game.clientWidth + 100 + "px";
+
+    flame.style.top =
+        y + "px";
+
+
+    game.appendChild(flame);
+
+
+    flames.push({
+
+        element: flame,
+
+        x: game.clientWidth + 100,
+
+        hit: false
+
+    });
+
+}
+
+
+/* =========================================
+   鞄を出す
+========================================= */
+
+
+function spawnBag() {
+
+    if (
+        !running ||
+        bagCollected
+    ) return;
+
+
+    bag.style.display = "block";
+
+
+    bag.style.left =
+        game.clientWidth + 100 + "px";
+
+
+    bag.style.top =
+        game.clientHeight * 0.45 + "px";
+
+
+    bag.dataset.x =
+        game.clientWidth + 100;
+
+}
+
+
+/* =========================================
+   当たり判定
+========================================= */
+
+
+function collision(a, b) {
+
+    const A =
+        a.getBoundingClientRect();
+
+    const B =
+        b.getBoundingClientRect();
+
+
+    /*
+      少し甘めの判定にしています。
+      見た目より当たりやす過ぎるのを防ぐため。
+    */
+
+    return !(
+
+        A.right - 15 < B.left + 15 ||
+
+        A.left + 15 > B.right - 15 ||
+
+        A.bottom - 15 < B.top + 15 ||
+
+        A.top + 15 > B.bottom - 15
+
+    );
+
+}
+
+
+/* =========================================
+   被弾
+========================================= */
+
+
+let invincible = false;
+
+
+function damage() {
+
+    if (
+        invincible ||
+        !running
+    ) return;
+
+
+    life--;
+
+    lifeText.textContent = life;
+
+
+    invincible = true;
+
+
+    hawks.style.opacity = "0.4";
+
+
+    setTimeout(() => {
+
+        hawks.style.opacity = "1";
+
+        invincible = false;
+
+    }, 1200);
+
+
+    if (life <= 0) {
+
+        gameOver();
+
+    }
+
+}
+
+
+/* =========================================
+   鞄取得
+========================================= */
+
+
+function collectBag() {
+
+    if (bagCollected) return;
+
+
+    bagCollected = true;
+
+
+    bag.style.display = "none";
+
+
+    /*
+      鞄を取ると
+      m と t が出ます
+    */
+
+    letters.style.display = "block";
+
+
+    setTimeout(() => {
+
+        letters.style.display = "none";
+
+    }, 2500);
+
+}
+
+
+/* =========================================
+   ゲーム更新
+========================================= */
+
+
+let lastTime = 0;
+
+
+function update(timestamp) {
+
+    if (!running) return;
+
+
+    const dt =
+        Math.min(
+            (timestamp - lastTime) / 16.67,
+            2
+        );
+
+    lastTime = timestamp;
+
+
+    /* -------------------------
+       ホークス上下運動
+    ------------------------- */
+
+
+    if (pressing) {
+
+        velocityY +=
+            lift * dt;
+
+    }
+
+
+    velocityY +=
+        gravity * dt;
+
+
+    velocityY =
+        Math.min(
+            velocityY,
+            maxFall
+        );
+
+
+    hawksY +=
+        velocityY * dt;
+
+
+    /*
+      画面外に出ないようにする
+    */
+
+    const margin = 50;
+
+
+    if (
+        hawksY <
+        margin
+    ) {
+
+        hawksY =
+            margin;
+
+        velocityY = 0;
+
+    }
+
+
+    if (
+        hawksY >
+        game.clientHeight - margin
+    ) {
+
+        hawksY =
+            game.clientHeight - margin;
+
+        velocityY = 0;
+
+    }
+
+
+    hawks.style.top =
+        hawksY + "px";
+
+
+    /* -------------------------
+       蒼い炎を移動
+    ------------------------- */
+
+
+    for (
+        let i =
+            flames.length - 1;
+
+        i >= 0;
+
+        i--
+    ) {
+
+        const f =
+            flames[i];
+
+
+        /*
+          横スクロール速度
+        */
+
+        f.x -=
+            4.2 * dt;
+
+
+        f.element.style.left =
+            f.x + "px";
+
+
+        /*
+          当たり判定
+        */
+
+        if (
+            !f.hit &&
+            collision(
+                hawks,
+                f.element
+            )
+        ) {
+
+            f.hit = true;
+
+            damage();
+
+        }
+
+
+        /*
+          画面外に出た炎を削除
+        */
+
+        if (
+            f.x < -120
+        ) {
+
+            f.element.remove();
+
+            flames.splice(
+                i,
+                1
+            );
+
+        }
+
+    }
+
+
+    /* -------------------------
+       鞄を移動
+    ------------------------- */
+
+
+    if (
+        !bagCollected &&
+        bag.style.display !== "none"
+    ) {
+
+        let x =
+            Number(
+                bag.dataset.x
+            );
+
+
+        x -=
+            3.5 * dt;
+
+
+        bag.dataset.x =
+            x;
+
+
+        bag.style.left =
+            x + "px";
+
+
+        /*
+          鞄取得
+        */
+
+        if (
+            collision(
+                hawks,
+                bag
+            )
+        ) {
+
+            collectBag();
+
+        }
+
+
+        /*
+          取り逃したら再出現
+        */
+
+        if (
+            x < -120
+        ) {
+
+            bag.style.display =
+                "none";
+
+
+            setTimeout(() => {
+
+                spawnBag();
+
+            }, 3000);
+
+        }
+
+    }
+
+
+    requestAnimationFrame(
+        update
+    );
+
+}
+
+
+/* =========================================
+   ゲーム開始
+========================================= */
+
+
+function startGame() {
+
+    document
+        .getElementById(
+            "start-screen"
+        )
+        .style.display =
+        "none";
+
+
+    running = true;
+
+
+    hawksY =
+        game.clientHeight / 2;
+
+
+    hawks.style.top =
+        hawksY + "px";
+
+
+    lastTime =
+        performance.now();
+
+
+    requestAnimationFrame(
+        update
+    );
+
+
+    /*
+      蒼い炎を約2秒ごとに出す
+    */
+
+    window.flameTimer =
+        setInterval(() => {
+
+            createFlame();
+
+        }, 1900);
+
+
+    /*
+      15秒くらいで鞄登場
+    */
+
+    setTimeout(() => {
+
+        spawnBag();
+
+    }, 15000);
+
+
+    /*
+      タイマー
+    */
+
+    window.gameTimer =
+        setInterval(() => {
+
+            remainingTime--;
+
+            timeText.textContent =
+                remainingTime;
+
+
+            if (
+                remainingTime <= 0
+            ) {
+
+                clearGame();
+
+            }
+
+        }, 1000);
+
+}
+
+
+/* =========================================
+   クリア
+========================================= */
+
+
+function clearGame() {
+
+    if (!running) return;
+
+
+    running = false;
+
+
+    clearInterval(
+        window.flameTimer
+    );
+
+
+    clearInterval(
+        window.gameTimer
+    );
+
+
+    const screen =
+        document.getElementById(
+            "result-screen"
+        );
+
+
+    document.getElementById(
+        "result-title"
+    ).textContent =
+        "CLEAR!";
+
+
+    /*
+      鞄を取っていない場合は
+      一応そのことも表示
+    */
+
+    if (bagCollected) {
+
+        document.getElementById(
+            "result-text"
+        ).innerHTML =
+            "鞄を回収しました。<br>m と t を覚えておいてください。";
+
+    }
+
+    else {
+
+        document.getElementById(
+            "result-text"
+        ).innerHTML =
+            "ゴール！<br>でも鞄を取り逃したようです。";
+
+    }
+
+
+    screen.style.display =
+        "flex";
+
+}
+
+
+/* =========================================
+   ゲームオーバー
+========================================= */
+
+
+function gameOver() {
+
+    running = false;
+
+
+    clearInterval(
+        window.flameTimer
+    );
+
+
+    clearInterval(
+        window.gameTimer
+    );
+
+
+    const screen =
+        document.getElementById(
+            "result-screen"
+        );
+
+
+    document.getElementById(
+        "result-title"
+    ).textContent =
+        "GAME OVER";
+
+
+    document.getElementById(
+        "result-text"
+    ).textContent =
+        "蒼い炎に3回当たりました。";
+
+
+    screen.style.display =
+        "flex";
+
+}
+
+
+/* =========================================
+   操作
+========================================= */
+
+
+/*
+  スマホ
+*/
+
+window.addEventListener(
+    "pointerdown",
+    (e) => {
+
+        if (!running) return;
+
+        pressing = true;
+
+        e.preventDefault();
+
+    }
+);
+
+
+window.addEventListener(
+    "pointerup",
+    () => {
+
+        pressing = false;
+
+    }
+);
+
+
+/*
+  PC Space
+*/
+
+window.addEventListener(
+    "keydown",
+    (e) => {
+
+        if (
+            e.code === "Space"
+        ) {
+
+            pressing = true;
+
+            e.preventDefault();
+
+        }
+
+    }
+);
+
+
+window.addEventListener(
+    "keyup",
+    (e) => {
+
+        if (
+            e.code === "Space"
+        ) {
+
+            pressing = false;
+
+        }
+
+    }
+);
+
+
+/* =========================================
+   スタートボタン
+========================================= */
+
+
+document
+    .getElementById(
+        "start-button"
+    )
+    .addEventListener(
+        "click",
+        startGame
+    );
+
+</script>
+
+</body>
+</html>
