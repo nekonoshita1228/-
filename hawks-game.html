@@ -39,6 +39,26 @@ html, body {
     background-position: center;
 }
 
+/* 背景のフェード切り替え */
+.background-layer {
+    position: absolute;
+    inset: 0;
+
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    opacity: 0;
+    transition: opacity 0.8s ease-in-out;
+
+    z-index: 0;
+    pointer-events: none;
+}
+
+.background-layer.active {
+    opacity: 1;
+}
+
 /* 背景画像がまだない間の説明 */
 #background-label {
     position: absolute;
@@ -256,10 +276,27 @@ button {
 </style>
 </head>
 
-
 <body>
 
+<!-- =========================
+	この下のゲーム設定が背景のスムーズな切り替わりに必要っぽい       
+
+    ========================== -->
+
+
 <div id="game">
+
+<div
+    id="background-layer-1"
+    class="background-layer active"
+    style="background-image: url('背景.png');"
+></div>
+
+<div
+    id="background-layer-2"
+    class="background-layer"
+></div>
+
 <!-- =========================
          ホークス
          ここに
@@ -528,6 +565,25 @@ setupImageFallback(
    経過時間に合わせて背景とホークスを切り替える
 ========================================= */
 
+
+/* =========================================
+   背景フェード切り替え
+========================================= */
+
+const backgroundLayers = [
+    document.getElementById("background-layer-1"),
+    document.getElementById("background-layer-2")
+];
+
+let activeBackgroundLayer = 0;
+
+// 背景画像を先に読み込んでおく
+const backgroundImageCache = backgroundStages.map(stage => {
+    const img = new Image();
+    img.src = stage.file;
+    return img;
+});
+
 function updateVisualStage(elapsedSeconds) {
 
     let stageIndex = 0;
@@ -540,22 +596,51 @@ function updateVisualStage(elapsedSeconds) {
 
     if (stageIndex !== currentBackgroundStage) {
         currentBackgroundStage = stageIndex;
-        game.style.backgroundImage =
-            `url("${backgroundStages[stageIndex].file}")`;
+
+        const nextStage = backgroundStages[stageIndex];
+        const nextImage = backgroundImageCache[stageIndex];
+
+        // 次の画像が読み込まれてからフェード開始
+        const showNextBackground = () => {
+
+            // 読み込み中に時間が進んでいたら古い背景は表示しない
+            if (stageIndex !== currentBackgroundStage) return;
+
+            const nextLayerIndex = 1 - activeBackgroundLayer;
+            const nextLayer = backgroundLayers[nextLayerIndex];
+            const currentLayer = backgroundLayers[activeBackgroundLayer];
+
+            nextLayer.style.backgroundImage =
+                `url("${nextStage.file}")`;
+
+            // 次の画像を表示し、現在の画像をフェードアウト
+            nextLayer.classList.add("active");
+            currentLayer.classList.remove("active");
+
+            activeBackgroundLayer = nextLayerIndex;
+        };
+
+        if (nextImage.complete && nextImage.naturalWidth > 0) {
+            showNextBackground();
+        } else {
+            nextImage.onload = showNextBackground;
+        }
     }
 
-    /* 夕焼けに入ったら夜用ホークスへ切り替える */
-    const nextHawksMode = elapsedSeconds >= 27 ? "night" : "day";
+    /* 夕焼けに入ったら夜用ホークスへ切り替え */
+    const nextHawksMode =
+        elapsedSeconds >= 27 ? "night" : "day";
 
     if (nextHawksMode !== currentHawksMode) {
         currentHawksMode = nextHawksMode;
+
         const hawksImage = document.getElementById("hawks-img");
+
         hawksImage.src = nextHawksMode === "night"
             ? hawksNightImage
             : hawksDayImage;
     }
 }
-
 
 /* =========================================
    蒼い炎を作る
@@ -1032,7 +1117,7 @@ function startGame() {
 
     running = true;
 
-    currentBackgroundStage = -1;
+    currentBackgroundStage = 0;
     currentHawksMode = "";
     updateVisualStage(0);
 
