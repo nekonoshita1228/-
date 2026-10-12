@@ -445,6 +445,8 @@ const backgroundStages = [
 const hawksDayImage = "ホークスの横向き絵.png";
 const hawksNightImage = "ホークスの横向き絵_夜.png";
 
+const flashImage = "フラッシュ.png";
+
 let currentBackgroundStage = -1;
 let currentHawksMode = "";
 
@@ -796,8 +798,7 @@ function collision(a, b) {
 
 let invincible = false;
 
-
-function damage() {
+function damage(flameElement) {
 
     if (
         invincible ||
@@ -808,6 +809,20 @@ function damage() {
     life--;
 
     lifeText.textContent = life;
+
+// 接触したスマホを一瞬だけフラッシュ画像にする
+if (flameElement) {
+    const img = flameElement.querySelector("img");
+
+    if (img) {
+        const originalSrc = img.src;
+        img.src = flashImage;
+
+        setTimeout(() => {
+            img.src = originalSrc;
+        }, 250);
+    }
+}
 
 
     invincible = true;
@@ -1000,9 +1015,8 @@ function update(timestamp) {
         ) {
 
             f.hit = true;
-
-            damage();
-
+ 	　 damage(f.element);
+            
         }
 
 
