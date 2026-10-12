@@ -33,7 +33,7 @@ html, body {
     height: 100vh;
     overflow: hidden;
 
-    /* ここに 背景.png を入れるよ */
+    /* 初期表示は昼の背景。プレイ中に時間経過で切り替わります。 */
     background-image: url("背景.png");
     background-size: cover;
     background-position: center;
@@ -260,14 +260,7 @@ button {
 <body>
 
 <div id="game">
-
-    <!-- ここに背景.pngを入れるよ -->
-    <div id="background-label">
-        ここに 背景.png を入れるよ
-    </div>
-
-
-    <!-- =========================
+<!-- =========================
          ホークス
          ここに
          ホークスの横向き絵.png
@@ -399,6 +392,26 @@ const lifeText = document.getElementById("life");
 
 const timeText = document.getElementById("time");
 
+/* =========================================
+   画像ファイル名の設定
+   ファイル名を変えたら、ここだけ直してください。
+========================================= */
+
+const backgroundStages = [
+    { start: 0,  file: "背景.png",  label: "昼" },
+    { start: 9,  file: "背景2.png", label: "午後" },
+    { start: 18, file: "背景3.png", label: "夕方" },
+    { start: 27, file: "背景4.png", label: "夕焼け" },
+    { start: 36, file: "背景5.png", label: "夜" }
+];
+
+const hawksDayImage = "ホークスの横向き絵.png";
+const hawksNightImage = "ホークスの横向き絵_夜.png";
+
+let currentBackgroundStage = -1;
+let currentHawksMode = "";
+
+
 
 let running = false;
 
@@ -472,6 +485,7 @@ function setupImageFallback(imgID, placeholderID) {
 
     img.onload = () => {
 
+        img.style.display = "block";
         placeholder.style.display = "none";
 
     };
@@ -480,10 +494,20 @@ function setupImageFallback(imgID, placeholderID) {
     img.onerror = () => {
 
         img.style.display = "none";
-
         placeholder.style.display = "flex";
 
     };
+
+    /* スクリプト実行前に画像の読み込みが終わっていた場合にも対応 */
+    if (img.complete) {
+        if (img.naturalWidth > 0) {
+            img.style.display = "block";
+            placeholder.style.display = "none";
+        } else {
+            img.style.display = "none";
+            placeholder.style.display = "flex";
+        }
+    }
 
 }
 
@@ -498,6 +522,39 @@ setupImageFallback(
     "bag-img",
     "bag-placeholder"
 );
+
+
+/* =========================================
+   経過時間に合わせて背景とホークスを切り替える
+========================================= */
+
+function updateVisualStage(elapsedSeconds) {
+
+    let stageIndex = 0;
+
+    for (let i = 0; i < backgroundStages.length; i++) {
+        if (elapsedSeconds >= backgroundStages[i].start) {
+            stageIndex = i;
+        }
+    }
+
+    if (stageIndex !== currentBackgroundStage) {
+        currentBackgroundStage = stageIndex;
+        game.style.backgroundImage =
+            `url("${backgroundStages[stageIndex].file}")`;
+    }
+
+    /* 夕焼けに入ったら夜用ホークスへ切り替える */
+    const nextHawksMode = elapsedSeconds >= 27 ? "night" : "day";
+
+    if (nextHawksMode !== currentHawksMode) {
+        currentHawksMode = nextHawksMode;
+        const hawksImage = document.getElementById("hawks-img");
+        hawksImage.src = nextHawksMode === "night"
+            ? hawksNightImage
+            : hawksDayImage;
+    }
+}
 
 
 /* =========================================
@@ -746,6 +803,9 @@ function update(timestamp) {
 
     lastTime = timestamp;
 
+    const elapsedSeconds = gameLength - remainingTime;
+    updateVisualStage(elapsedSeconds);
+
 
     /* -------------------------
        ホークス上下運動
@@ -972,6 +1032,10 @@ function startGame() {
 
     running = true;
 
+    currentBackgroundStage = -1;
+    currentHawksMode = "";
+    updateVisualStage(0);
+
 
     hawksY =
         game.clientHeight / 2;
@@ -1084,7 +1148,7 @@ function clearGame() {
         document.getElementById(
             "result-text"
         ).innerHTML =
-            "鞄を回収しました。<br>m と t を覚えておいてください。";
+            "鞄を回収できた！<br>早く荼毘を探さないと";
 
     }
 
@@ -1093,7 +1157,7 @@ function clearGame() {
         document.getElementById(
             "result-text"
         ).innerHTML =
-            "ゴール！<br>でも鞄を取り逃したようです。";
+            "蒼炎は避けきれたけど、鞄を見失ってしまった……。<br>もう一度探そう";
 
     }
 
@@ -1139,7 +1203,7 @@ function gameOver() {
     document.getElementById(
         "result-text"
     ).textContent =
-        "蒼い炎に3回当たりました。";
+        "蒼炎に3回当たってしまった。剛翼を冷やしてから再挑戦だ";
 
 
     screen.style.display =
