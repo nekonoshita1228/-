@@ -443,6 +443,7 @@ const backgroundStages = [
 ];
 
 const hawksDayImage = "ホークスの横向き絵.png";
+const hawksDayImage = "ホークスの横向き絵_夕方.png";
 const hawksNightImage = "ホークスの横向き絵_夜.png";
 
 const flashImage = "フラッシュ.png";
@@ -629,18 +630,26 @@ function updateVisualStage(elapsedSeconds) {
         }
     }
 
-    /* 夕焼けに入ったら夜用ホークスへ切り替え */
-    const nextHawksMode =
-        elapsedSeconds >= 27 ? "night" : "day";
+   /* 時間帯に合わせてホークスを切り替える */
+let nextHawksMode = "day";
 
-    if (nextHawksMode !== currentHawksMode) {
-        currentHawksMode = nextHawksMode;
+if (elapsedSeconds >= 36) {
+    nextHawksMode = "night";
+} else if (elapsedSeconds >= 27) {
+    nextHawksMode = "evening";
+}
 
-        const hawksImage = document.getElementById("hawks-img");
+if (nextHawksMode !== currentHawksMode) {
+    currentHawksMode = nextHawksMode;
 
-        hawksImage.src = nextHawksMode === "night"
-            ? hawksNightImage
-            : hawksDayImage;
+    const hawksImage = document.getElementById("hawks-img");
+
+    if (nextHawksMode === "night") {
+        hawksImage.src = hawksNightImage;
+    } else if (nextHawksMode === "evening") {
+        hawksImage.src = hawksEveningImage;
+    } else {
+        hawksImage.src = hawksDayImage;
     }
 }
 
