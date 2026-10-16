@@ -698,21 +698,16 @@ function createFlame() {
 
 
     /*
-      上すぎ・下すぎない位置に出現
+      上下の端にも出現
     */
 
-    const minY =
-        game.clientHeight * 0.18;
+  const minY = -20;
+const maxY = game.clientHeight - 70;
 
-    const maxY =
-        game.clientHeight * 0.82;
-
-
-    const y =
-        minY +
-        Math.random() *
-        (maxY - minY);
-
+const y =
+    minY +
+    Math.random() *
+    (maxY - minY);
 
     flame.style.left =
         game.clientWidth + 100 + "px";
