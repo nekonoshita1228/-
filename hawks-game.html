@@ -443,7 +443,7 @@ const backgroundStages = [
 ];
 
 const hawksDayImage = "ホークスの横向き絵.png";
-const hawksImage = "ホークスの横向き絵_夕方.png";
+const hawksEveningImage = "ホークスの横向き絵_夕方.png";
 const hawksNightImage = "ホークスの横向き絵_夜.png";
 
 const flashImage = "フラッシュ.png";
@@ -630,7 +630,7 @@ function updateVisualStage(elapsedSeconds) {
         }
     }
 
-   /* 時間帯に合わせてホークスを切り替える */
+/* 時間帯に合わせてホークスを切り替える */
 let nextHawksMode = "day";
 
 if (elapsedSeconds >= 36) {
@@ -642,16 +642,15 @@ if (elapsedSeconds >= 36) {
 if (nextHawksMode !== currentHawksMode) {
     currentHawksMode = nextHawksMode;
 
-    const hawksImage = document.getElementById("hawks-img");
+    const hawksImg = document.getElementById("hawks-img");
 
     if (nextHawksMode === "night") {
-        hawksImage.src = hawksNightImage;
+        hawksImg.src = hawksNightImage;
     } else if (nextHawksMode === "evening") {
-        hawksImage.src = hawksEveningImage;
+        hawksImg.src = hawksEveningImage;
     } else {
-        hawksImage.src = hawksDayImage;
+        hawksImg.src = hawksDayImage;
     }
-}
 }
 
 /* =========================================
