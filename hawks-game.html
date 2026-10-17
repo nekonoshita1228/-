@@ -273,6 +273,101 @@ button {
     cursor: pointer;
 }
 
+	
+/* =========================
+   虹色ブースト
+========================= */
+
+#hawks.rainbow-mode img {
+    animation: rainbowGlow 0.7s linear infinite;
+}
+
+@keyframes rainbowGlow {
+    0% {
+        filter: hue-rotate(0deg) brightness(1.4)
+                drop-shadow(0 0 8px red);
+    }
+    25% {
+        filter: hue-rotate(90deg) brightness(1.6)
+                drop-shadow(0 0 10px yellow);
+    }
+    50% {
+        filter: hue-rotate(180deg) brightness(1.6)
+                drop-shadow(0 0 10px cyan);
+    }
+    75% {
+        filter: hue-rotate(270deg) brightness(1.6)
+                drop-shadow(0 0 10px magenta);
+    }
+    100% {
+        filter: hue-rotate(360deg) brightness(1.4)
+                drop-shadow(0 0 8px red);
+    }
+}
+
+/* 虹の羽根 */
+.rainbow-feather {
+    position: absolute;
+    z-index: 12;
+    width: 48px;
+    height: 65px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    color: white;
+    text-shadow:
+        0 0 5px red,
+        0 0 10px orange,
+        0 0 15px cyan,
+        0 0 20px violet;
+    animation: featherFloat 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes featherFloat {
+    from { transform: translateY(-5px) rotate(-12deg); }
+    to   { transform: translateY(5px) rotate(12deg); }
+}
+
+/* 電信柱：画像なしで描画 */
+.telephone-pole {
+    position: absolute;
+    z-index: 8;
+    width: 34px;
+    height: 100%;
+    top: 0;
+    pointer-events: none;
+}
+
+.telephone-pole::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 12px;
+    width: 10px;
+    background: linear-gradient(
+        to right,
+        #49413c,
+        #958579,
+        #49413c
+    );
+}
+
+.telephone-pole::after {
+    content: "";
+    position: absolute;
+    top: 22%;
+    left: -12px;
+    width: 58px;
+    height: 7px;
+    background: #62574f;
+    box-shadow:
+        0 12px 0 -2px #62574f,
+        0 24px 0 -2px #62574f;
+}
+
+	
 </style>
 </head>
 
@@ -507,7 +602,14 @@ let bagCollected = false;
 
 let flames = [];
 
+/* 虹の羽根・電信柱 */
 
+let rainbowFeather = null;
+let rainbowFeatherCollected = false;
+let permanentInvincible = false;
+
+let telephonePoles = [];
+	
 /* =========================================
    画像が存在しない場合、
    「ここに画像を入れるよ」を表示
@@ -733,6 +835,82 @@ const y =
 
 
 /* =========================================
+   虹の羽根
+========================================= */
+
+function spawnRainbowFeather() {
+    if (!running || rainbowFeatherCollected || rainbowFeather) return;
+
+    const feather = document.createElement("div");
+    feather.className = "rainbow-feather";
+    feather.textContent = "🪶";
+
+    feather.style.left = game.clientWidth + "px";
+    feather.style.top = game.clientHeight * 0.35 + "px";
+
+    game.appendChild(feather);
+
+    rainbowFeather = {
+        element: feather,
+        x: game.clientWidth
+    };
+}
+
+
+/* =========================================
+   電信柱
+========================================= */
+
+function spawnTelephonePole() {
+    if (!running) return;
+
+    const pole = document.createElement("div");
+    pole.className = "telephone-pole";
+
+    pole.style.left = game.clientWidth + "px";
+
+    game.appendChild(pole);
+
+    telephonePoles.push({
+        element: pole,
+        x: game.clientWidth,
+        hit: false
+    });
+}
+
+
+/* =========================================
+   虹の羽根を取得
+========================================= */
+
+function collectRainbowFeather() {
+    if (rainbowFeatherCollected || !rainbowFeather) return;
+
+    rainbowFeatherCollected = true;
+    permanentInvincible = true;
+
+    rainbowFeather.element.remove();
+    rainbowFeather = null;
+
+    // ホークスを虹色に光らせる
+    hawks.classList.add("rainbow-mode");
+
+    // 取得したことが分かる短い表示
+    letters.textContent = "RAINBOW!";
+    letters.style.letterSpacing = "4px";
+    letters.style.fontSize = "42px";
+    letters.style.display = "block";
+
+    setTimeout(() => {
+        letters.style.display = "none";
+        letters.textContent = "m t";
+        letters.style.letterSpacing = "40px";
+        letters.style.fontSize = "90px";
+    }, 1800);
+}
+
+
+/* =========================================
    鞄を出す
 ========================================= */
 
@@ -807,6 +985,7 @@ function damage(flameElement) {
 
     if (
         invincible ||
+		permanentInvincible ||
         !running
     ) return;
 
