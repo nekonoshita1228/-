@@ -467,7 +467,7 @@ button {
 
     <div class="overlay" id="start-screen">
 
-        <h1>💼かばんを さがそう💼</h1>
+        <h1>かばんを さがそう</h1>
 
         <p>
             ホークスは あなたの しじで とぶよ<br><br>
@@ -905,7 +905,7 @@ function collectRainbowFeather() {
     hawks.classList.add("rainbow-mode");
 
     // 取得したことが分かる短い表示
-    letters.textContent = "RAINBOW!";
+    letters.textContent = "PLUS ULTRA!";
     letters.style.letterSpacing = "4px";
     letters.style.fontSize = "42px";
     letters.style.display = "block";
@@ -1506,7 +1506,8 @@ function clearGame() {
         document.getElementById(
             "result-text"
         ).innerHTML =
-            "はやく 荼毘をさがさないと";
+            "かんぺきな しじ だった！<br>
+			ホークスの かくごを 荼毘にわたそう";
 
     }
 
@@ -1515,7 +1516,7 @@ function clearGame() {
         document.getElementById(
             "result-text"
         ).innerHTML =
-            "かばんを みうしなった<br>もういちど さがそう";
+            "かばんを みうしなった";
 
     }
 
@@ -1575,7 +1576,8 @@ function gameOver(reason) {
         document.getElementById(
             "result-text"
         ).textContent =
-            "あいすべき しみんの<br>スマホを さけてとぼう";
+            "あいすべき しみんの<br>
+			スマホを さけてとぼう";
 
     }
 
