@@ -1208,11 +1208,23 @@ function update(timestamp) {
     )
 ) {
 
+    
+if (
+    !f.hit &&
+    collision(
+        hawks,
+        f.element
+    )
+) {
     f.hit = true;
 
-    phoneHits++;
+    // 虹色無敵状態では写真を撮られた回数に含めない
+    if (!permanentInvincible) {
+        phoneHits++;
+    }
 
     damage(f.element);
+}
 
 }
 
