@@ -467,18 +467,20 @@ button {
 
     <div class="overlay" id="start-screen">
 
-        <h1>FLY!</h1>
+        <h1>💼かばんを さがそう💼</h1>
 
         <p>
-            押している間：上昇<br>
-            離す：下降<br><br>
+            ホークスは あなたの しじで とぶよ<br><br>
+			
+            PC：クリック か スペースキー<br>
+            スマホ：がめんを タッチ<br><br>
 
-            PC：クリック / Space<br>
-            スマホ：画面タッチ
+			おしつづける：上がる<br>
+            はなす：下がる<br>
         </p>
 
         <button id="start-button">
-            START
+            とぶ
         </button>
 
     </div>
@@ -497,7 +499,7 @@ button {
         <p id="result-text"></p>
 
         <button onclick="location.reload()">
-            RETRY
+            もういちど さがす
         </button>
 
     </div>
@@ -1491,7 +1493,7 @@ function clearGame() {
     document.getElementById(
         "result-title"
     ).textContent =
-        "CLEAR!";
+        "かばんを みつけた！";
 
 
     /*
@@ -1504,7 +1506,7 @@ function clearGame() {
         document.getElementById(
             "result-text"
         ).innerHTML =
-            "鞄を回収できた！<br>早く荼毘を探さないと";
+            "はやく 荼毘をさがさないと";
 
     }
 
@@ -1513,7 +1515,7 @@ function clearGame() {
         document.getElementById(
             "result-text"
         ).innerHTML =
-            "蒼炎は避けきれたけど、鞄を見失ってしまった……。<br>もう一度探そう";
+            "かばんを みうしなった<br>もういちど さがそう";
 
     }
 
@@ -1556,24 +1558,24 @@ function gameOver(reason) {
         document.getElementById(
             "result-title"
         ).textContent =
-            "GAME OVER";
+            "でんちゅうに げきとつした";
 
         document.getElementById(
             "result-text"
         ).textContent =
-            "電柱に激突してしまった。ホークスの飛行ルートは見直す必要がありそうだ。";
+            "ホークスの とぶルートを みなおそう";
 
     } else {
 
         document.getElementById(
             "result-title"
         ).textContent =
-            "GAME OVER";
+            "しみんに ３回激写された";
 
         document.getElementById(
             "result-text"
         ).textContent =
-            "市民に３回も激写されてしまった。ここにいた証拠が残るとマズい。時間をおいてから再挑戦だ";
+            "あいすべき しみんの<br>スマホを さけてとぼう";
 
     }
 
