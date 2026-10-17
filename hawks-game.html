@@ -1495,7 +1495,7 @@ function clearGame() {
 
     document.getElementById(
         "result-title"
-    ).textContent =
+    ).innerHTML =
         "かばんを みつけた！";
 
 
@@ -1511,10 +1511,10 @@ function clearGame() {
     ).innerHTML =
         phoneHits === 0
             ? `かんぺきな しじ だった！<br>
-               ホークスの かくごを 荼毘にわたそう`
+               ホークスの かくごを 荼毘にわたそう！`
             : `とられた しゃしんは<br>
-               すくないから けしてしまえば いい<br>
-			   ホークスの かくごを 荼毘にわたそう`;
+               けしてしまえば いい<br>
+			   ホークスの かくごを 荼毘にわたそう！`;
 
 }
     else {
@@ -1522,7 +1522,8 @@ function clearGame() {
         document.getElementById(
             "result-text"
         ).innerHTML =
-            "かばんを みうしなった";
+            `しかし かばんを とれなかった<br>
+             こんどは おちついて とろう`;
 
     }
 
