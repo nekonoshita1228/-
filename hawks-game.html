@@ -582,6 +582,7 @@ const maxFall = 6;
 /* ライフ */
 
 let life = 3;
+let phoneHits = 0;
 
 
 /* ゲーム時間
@@ -1199,19 +1200,21 @@ function update(timestamp) {
           当たり判定
         */
 
-        if (
-            !f.hit &&
-            collision(
-                hawks,
-                f.element
-            )
-        ) {
+     if (
+    !f.hit &&
+    collision(
+        hawks,
+        f.element
+    )
+) {
 
-            f.hit = true;
- 	　 damage(f.element);
-            
-        }
+    f.hit = true;
 
+    phoneHits++;
+
+    damage(f.element);
+
+}
 
         /*
           画面外に出た炎を削除
@@ -1501,16 +1504,18 @@ function clearGame() {
       一応そのことも表示
     */
 
-    if (bagCollected) {
+  if (bagCollected) {
 
-        document.getElementById(
-            "result-text"
-        ).innerHTML =
-            `かんぺきな しじ だった！<br>
-			ホークスの かくごを 荼毘にわたそう`;
+    document.getElementById(
+        "result-text"
+    ).innerHTML =
+        phoneHits === 0
+            ? `かんぺきな しじ だった！<br>
+               ホークスの かくごを 荼毘にわたそう`
+            : `とられたしゃしんは<br>
+               すくないから けしてしまえばいい`;
 
-    }
-
+}
     else {
 
         document.getElementById(
