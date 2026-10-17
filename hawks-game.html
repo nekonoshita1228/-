@@ -861,21 +861,27 @@ function spawnRainbowFeather() {
    電信柱
 ========================================= */
 
+
 function spawnTelephonePole() {
-    if (!running) return;
+  if (!running) return;
 
-    const pole = document.createElement("div");
-    pole.className = "telephone-pole";
+  const pole = document.createElement("div");
+  pole.className = "telephone-pole";
 
-    pole.style.left = game.clientWidth + "px";
+  const gameHeight = game.clientHeight;
+  const poleHeight = gameHeight * 0.55;
 
-    game.appendChild(pole);
+  pole.style.height = poleHeight + "px";
+  pole.style.left = game.clientWidth + "px";
+  pole.style.bottom = "0px";
 
-    telephonePoles.push({
-        element: pole,
-        x: game.clientWidth,
-        hit: false
-    });
+  game.appendChild(pole);
+
+  telephonePoles.push({
+    element: pole,
+    x: game.clientWidth,
+    hit: false
+  });
 }
 
 
