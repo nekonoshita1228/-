@@ -606,7 +606,7 @@ let flames = [];
 let rainbowFeather = null;
 let rainbowFeatherCollected = false;
 let permanentInvincible = false;
-
+let rainbowFeatherSpawned = false;
 let telephonePoles = [];
 	
 /* =========================================
@@ -838,8 +838,10 @@ const y =
 ========================================= */
 
 function spawnRainbowFeather() {
-    if (!running || rainbowFeatherCollected || rainbowFeather) return;
+  if (!running || rainbowFeatherSpawned) return;
 
+  rainbowFeatherSpawned = true;
+	
     const feather = document.createElement("div");
     feather.className = "rainbow-feather";
     feather.textContent = "🪶";
