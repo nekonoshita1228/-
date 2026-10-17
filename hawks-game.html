@@ -1224,6 +1224,53 @@ function update(timestamp) {
     }
 
 
+/* -------------------------
+   虹の羽根を移動・取得
+------------------------- */
+
+if (rainbowFeather) {
+    rainbowFeather.x -= 3.5 * dt;
+
+    rainbowFeather.element.style.left =
+        rainbowFeather.x + "px";
+
+    if (collision(hawks, rainbowFeather.element)) {
+        collectRainbowFeather();
+    } else if (rainbowFeather.x < -60) {
+        rainbowFeather.element.remove();
+        rainbowFeather = null;
+    }
+}
+
+
+/* -------------------------
+   電信柱を移動・当たり判定
+------------------------- */
+
+for (let i = telephonePoles.length - 1; i >= 0; i--) {
+    const pole = telephonePoles[i];
+
+    pole.x -= 4.2 * dt;
+    pole.element.style.left = pole.x + "px";
+
+    if (
+        !pole.hit &&
+        collision(hawks, pole.element)
+    ) {
+        pole.hit = true;
+
+        if (!permanentInvincible) {
+            gameOver();
+            return;
+        }
+    }
+
+    if (pole.x < -60) {
+        pole.element.remove();
+        telephonePoles.splice(i, 1);
+    }
+}
+	
     /* -------------------------
        鞄を移動
     ------------------------- */
@@ -1359,6 +1406,25 @@ function startGame() {
 
     }, 15000);
 
+
+/* 虹の羽根：ゲーム中に一度だけ、約12秒後に出現 */
+
+setTimeout(() => {
+    spawnRainbowFeather();
+}, 12000);
+
+
+/* 電信柱：ゲーム中に2回出現 */
+
+setTimeout(() => {
+    spawnTelephonePole();
+}, 16000);
+
+setTimeout(() => {
+    spawnTelephonePole();
+}, 32000);
+
+	
 
     /*
       タイマー
