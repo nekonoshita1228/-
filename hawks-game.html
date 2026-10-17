@@ -1529,38 +1529,53 @@ function clearGame() {
 ========================================= */
 
 
-function gameOver() {
+
+/* =========================================
+   ゲームオーバー
+========================================= */
+
+function gameOver(reason) {
 
     running = false;
-
 
     clearInterval(
         window.flameTimer
     );
 
-
     clearInterval(
         window.gameTimer
     );
-
 
     const screen =
         document.getElementById(
             "result-screen"
         );
 
+    if (reason === "pole") {
 
-    document.getElementById(
-        "result-title"
-    ).textContent =
-        "GAME OVER";
+        document.getElementById(
+            "result-title"
+        ).textContent =
+            "GAME OVER";
 
+        document.getElementById(
+            "result-text"
+        ).textContent =
+            "電柱に激突してしまった。ホークスの飛行ルートは見直す必要がありそうだ。";
 
-    document.getElementById(
-        "result-text"
-    ).textContent =
-        "市民に３回も激写されてしまった。ここにいた証拠が残るとマズい。時間をおいてから再挑戦だ";
+    } else {
 
+        document.getElementById(
+            "result-title"
+        ).textContent =
+            "GAME OVER";
+
+        document.getElementById(
+            "result-text"
+        ).textContent =
+            "市民に３回も激写されてしまった。ここにいた証拠が残るとマズい。時間をおいてから再挑戦だ";
+
+    }
 
     screen.style.display =
         "flex";
