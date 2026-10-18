@@ -245,30 +245,28 @@ html, body {
 }
 	
 #letters {
-    animation: plusUltraSparkle 1.2s ease-in-out infinite alternate;
+    animation: plusUltraSparkle 0.5s ease-out;
 }
 
 @keyframes plusUltraSparkle {
     0% {
         filter: brightness(1);
+    }
+
+    20% {
+        filter: brightness(2);
         text-shadow:
-            0 0 5px #ffffff,
-            0 0 12px #ffd45c,
-            0 0 24px #ff8a24,
+            0 0 10px #ffffff,
+            0 0 25px #fff4a3,
+            0 0 45px #ffd45c,
+            0 0 60px #ff8a24,
             3px 4px 0 #a92c24;
     }
 
     100% {
-        filter: brightness(1.4);
-        text-shadow:
-            0 0 8px #ffffff,
-            0 0 18px #fff4a3,
-            0 0 32px #ffd45c,
-            0 0 45px #ff8a24,
-            3px 4px 0 #a92c24;
+        filter: brightness(1);
     }
 }
-
 /* =========================
    開始・クリア・ゲームオーバー
 ========================= */
