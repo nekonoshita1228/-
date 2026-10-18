@@ -935,12 +935,14 @@ function collectRainbowFeather() {
 
     // 取得したことが分かる短い表示
     letters.textContent = "PLUS ULTRA!";
+	letters.classList.add("plus-ultra");
     letters.style.letterSpacing = "4px";
     letters.style.fontSize = "42px";
     letters.style.display = "block";
 
     setTimeout(() => {
         letters.style.display = "none";
+		letters.classList.remove("plus-ultra");
         letters.textContent = "m t";
         letters.style.letterSpacing = "40px";
         letters.style.fontSize = "90px";
