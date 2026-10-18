@@ -200,39 +200,33 @@ html, body {
    こたえ 表示
 ========================= */
 
+/* 答えの文字：通常表示 */
 #letters {
-
     position: absolute;
-
     top: 40%;
     left: 50%;
-
     transform: translate(-50%, -50%);
 
+    font-family: sans-serif;
     font-size: 90px;
     font-weight: bold;
-
     letter-spacing: 40px;
 
     color: white;
-
-    text-shadow:
-        3px 3px 0 #333,
-        -3px -3px 0 #333,
-        3px -3px 0 #333,
-        -3px 3px 0 #333;
+    text-shadow: none;
 
     display: none;
-
     z-index: 100;
 }
 
-/* PLUS ULTRA! の必殺技演出　時間あったらきらきら文字にしたい */
-#letters {
+/* PLUS ULTRA! のときだけ必殺技演出 */
+#letters.plus-ultra {
     font-family: Impact, "Arial Black", sans-serif;
     font-weight: 900;
     font-style: italic;
     color: #fff6ce;
+    letter-spacing: 4px;
+    font-size: 42px;
 
     -webkit-text-stroke: 1.5px #ff9b35;
 
@@ -242,15 +236,11 @@ html, body {
         0 0 24px #ff8a24,
         3px 4px 0 #a92c24;
 
-    transform: translate(-50%, -50%) scale(1.05);
-}
-	
-#letters {
     animation: plusUltraSparkle 0.5s ease-out;
 }
 
 @keyframes plusUltraSparkle {
-    0% {
+    0%, 100% {
         filter: brightness(1);
     }
 
@@ -263,11 +253,8 @@ html, body {
             0 0 60px #ff8a24,
             3px 4px 0 #a92c24;
     }
-
-    100% {
-        filter: brightness(1);
-    }
 }
+
 /* =========================
    開始・クリア・ゲームオーバー
 ========================= */
