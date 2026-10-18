@@ -196,7 +196,7 @@ html, body {
 
 
 /* =========================
-   m / t 表示
+   こたえ 表示
 ========================= */
 
 #letters {
@@ -226,7 +226,7 @@ html, body {
     z-index: 100;
 }
 
-/* PLUS ULTRA! の必殺技演出 */
+/* PLUS ULTRA! の必殺技演出　時間あったらきらきら文字にしたい */
 #letters {
     font-family: Impact, "Arial Black", sans-serif;
     font-weight: 900;
@@ -243,7 +243,31 @@ html, body {
 
     transform: translate(-50%, -50%) scale(1.05);
 }
+	
+#letters {
+    animation: plusUltraSparkle 1.2s ease-in-out infinite alternate;
+}
 
+@keyframes plusUltraSparkle {
+    0% {
+        filter: brightness(1);
+        text-shadow:
+            0 0 5px #ffffff,
+            0 0 12px #ffd45c,
+            0 0 24px #ff8a24,
+            3px 4px 0 #a92c24;
+    }
+
+    100% {
+        filter: brightness(1.4);
+        text-shadow:
+            0 0 8px #ffffff,
+            0 0 18px #fff4a3,
+            0 0 32px #ffd45c,
+            0 0 45px #ff8a24,
+            3px 4px 0 #a92c24;
+    }
+}
 
 /* =========================
    開始・クリア・ゲームオーバー
