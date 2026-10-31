@@ -49,15 +49,14 @@
     .story {
       font-size: 1rem;
       overflow-wrap: anywhere;
+      white-space: pre-wrap; /* 改行やスペースをそのまま反映させる */
     }
-    .story p { margin: 0 0 1.2em; }
-    .story .placeholder {
-      color: var(--muted);
-      text-align: center;
-      padding: 3em 1em;
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      line-height: 1.8;
+    .story p {
+      text-indent: 1em;
+      margin: 0 0 2em 0;
+    }
+    .story .talk {
+      text-indent: 0;
     }
     .divider {
       width: 34px;
@@ -137,8 +136,6 @@
       html { scroll-behavior: auto; }
       *, *::before, *::after { transition-duration: .01ms !important; }
     }
-     .story p { text-indent: 1em; margin: 0 0 2em 0; }
-    .story .talk { text-indent: 0; }
   </style>
 </head>
 <body>
@@ -149,9 +146,7 @@
     </header>
 
     <article class="story">
-      <p class="placeholder">
-    <p>
-        「ヒーロー、おかえり」
+「ヒーロー、おかえり」
 　明かりがついているのは妙だと思った。消し忘れたかな、とリビングのドアを開けた瞬間、黒髪の男が振り返って笑いかけてきたから、俺は思わず買い物袋を落とした。フローリングの床へカップ麺がいくつも転がる。
 「ハ、喜びのあまりそのよく回る口も動かねえってか？　歓迎されて嬉しいよ」
 　LEDの白い光が黒い襤褸のコートをまとうヴィランを照らしている。解放戦線の隊長格、個性〝蒼炎〟をもつ荼毘。俺を最後まで信じてくれなかった手強い男だ。
@@ -288,7 +283,7 @@
 「俺もお前に生きてほしかったよ」
 　窓から入ってくる風は、非常灯の緑を反射したカーテンをゆるく揺らした。
 　生命維持ポッドは開け放たれたまま、埃が積もっている。公安本部には誰の声もしない。 十月三十一日が終わった。 
-  </p>
+
     </article>
 
     <div class="divider" aria-hidden="true"></div>
@@ -323,8 +318,8 @@
       const specialNames = ["荼毘", "轟燈矢", "燈矢"];
 
       reply.textContent = specialNames.includes(name)
-        ? "Match found　その人は、蒼炎の向こうで待っています。"
-        : "error　申し訳ございません。対象が見つかりませんでした。";
+        ? "Match found その人は、蒼炎の向こうで待っています。"
+        : "error 申し訳ございません。対象が見つかりませんでした。";
 
       reply.classList.remove("visible");
       requestAnimationFrame(() => {
