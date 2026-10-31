@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111318">
+  <title>十月三十一日</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #111318;
+      --text: #e8e7e3;
+      --muted: #92949b;
+      --line: #393c44;
+      --accent: #8ca9c5;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Yu Mincho", "Hiragino Mincho ProN", "Noto Serif JP", serif;
+      line-height: 2.15;
+      letter-spacing: .045em;
+    }
+    .page {
+      width: min(100% - 40px, 760px);
+      margin: 0 auto;
+      padding: 72px 0 100px;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .date {
+      color: var(--muted);
+      font-family: sans-serif;
+      font-size: .72rem;
+      letter-spacing: .24em;
+    }
+    h1 {
+      margin: 18px 0 0;
+      font-size: clamp(1.45rem, 5vw, 2rem);
+      font-weight: 400;
+      letter-spacing: .18em;
+    }
+    .story {
+      font-size: 1rem;
+      overflow-wrap: anywhere;
+    }
+    .story p { margin: 0 0 1.2em; }
+    .story .placeholder {
+      color: var(--muted);
+      text-align: center;
+      padding: 3em 1em;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      line-height: 1.8;
+    }
+    .divider {
+      width: 34px;
+      height: 1px;
+      background: var(--line);
+      margin: 72px auto 64px;
+    }
+    .afterword {
+      max-width: 520px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .prompt {
+      margin: 0 0 22px;
+      font-size: .95rem;
+    }
+    form {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+    }
+    input {
+      flex: 1;
+      min-width: 0;
+      padding: 13px 14px;
+      border: 1px solid var(--line);
+      border-radius: 0;
+      background: #191c22;
+      color: var(--text);
+      font: inherit;
+      font-size: 16px;
+      letter-spacing: .06em;
+      outline: none;
+    }
+    input:focus { border-color: var(--accent); }
+    button {
+      padding: 12px 22px;
+      border: 1px solid #737984;
+      border-radius: 0;
+      background: transparent;
+      color: var(--text);
+      font: inherit;
+      font-size: .9rem;
+      letter-spacing: .12em;
+      cursor: pointer;
+      transition: background .2s, border-color .2s;
+    }
+    button:hover {
+      background: #252a33;
+      border-color: var(--accent);
+    }
+    #reply {
+      min-height: 3.2em;
+      margin: 30px 0 0;
+      color: var(--accent);
+      font-size: 1rem;
+      opacity: 0;
+      transition: opacity .8s ease;
+    }
+    #reply.visible { opacity: 1; }
+    footer {
+      margin-top: 84px;
+      text-align: center;
+      color: var(--muted);
+      font-family: sans-serif;
+      font-size: .68rem;
+      letter-spacing: .18em;
+    }
+    @media (max-width: 520px) {
+      .page { width: min(100% - 32px, 760px); padding-top: 48px; }
+      header { margin-bottom: 48px; }
+      .story { font-size: .94rem; }
+      form { gap: 7px; }
+      button { padding-inline: 16px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div class="date">OCTOBER 31</div>
+      <h1>十月三十一日</h1>
+    </header>
+
+    <article class="story">
+      <p class="placeholder">5000字の本文をここに入れる</p>
+    </article>
+
+    <div class="divider" aria-hidden="true"></div>
+
+    <section class="afterword" aria-label="メッセージ">
+      <p class="prompt">あなたが待っている名前を入力してください</p>
+      <form id="name-form">
+        <input
+          id="name-input"
+          type="text"
+          autocomplete="off"
+          aria-label="名前"
+        >
+        <button type="submit">送信</button>
+      </form>
+      <p id="reply" role="status" aria-live="polite"></p>
+    </section>
+
+    <footer>10 · 31</footer>
+  </main>
+
+  <script>
+    const form = document.getElementById("name-form");
+    const input = document.getElementById("name-input");
+    const reply = document.getElementById("reply");
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const name = input.value.trim();
+      const specialNames = ["荼毘", "轟燈矢", "燈矢"];
+
+      reply.textContent = specialNames.includes(name)
+        ? "その人は、蒼い炎の向こうで待っています"
+        : "その人は、ずっとあなたの心の傍にいます";
+
+      reply.classList.remove("visible");
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => reply.classList.add("visible"));
+      });
+    });
+  </script>
+</body>
+</html>
