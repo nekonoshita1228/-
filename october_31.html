@@ -8,11 +8,12 @@
   <style>
     :root {
       color-scheme: dark;
-      --bg: #111318;
-      --text: #d4d6dc;
+      --bg: #16181f;    /* 目に優しい深みのあるダークグレー */
+      --text: #d4d6dc;  /* 優しく読みやすいシルバーホワイト */
       --muted: #92949b;
       --line: #393c44;
       --accent: #8ca9c5;
+      --blue-flame: #3b82f6; /* 蒼炎のカラー */
     }
     * { box-sizing: border-box; }
     html { scroll-behavior: smooth; }
@@ -24,7 +25,30 @@
         "ヒラギノ角ゴ ProN W3", Meiryo, "Noto Sans JP", sans-serif;
       line-height: 1.8;
       letter-spacing: .05em;
+      overflow-x: hidden;
     }
+
+    /* 青い炎（蒼炎）のフラッシュ演出用オーバーレイ */
+    #flame-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.4) 0%, rgba(13, 27, 62, 0.8) 60%, rgba(16, 18, 24, 0.95) 100%);
+      opacity: 0;
+      pointer-events: none;
+      z-index: 9999;
+      transition: opacity 0.3s ease;
+      box-shadow: inset 0 0 120px rgba(59, 130, 246, 0.6);
+    }
+    #flame-overlay.active {
+      animation: flameAnim 1.2s ease forwards;
+    }
+    @keyframes flameAnim {
+      0% { opacity: 0; transform: scale(1.05); }
+      30% { opacity: 1; }
+      70% { opacity: 0.85; }
+      100% { opacity: 0; transform: scale(1); }
+    }
+
     .page {
       width: min(100% - 40px, 760px);
       margin: 0 auto;
@@ -43,13 +67,19 @@
     h1 {
       margin: 18px 0 0;
       font-size: clamp(1.45rem, 5vw, 2rem);
-      font-weight: 400;
+      font-weight: 300;
       letter-spacing: .18em;
+      font-family: "Times New Roman", "YuMincho", "Hiragino Mincho ProN", "Yu Mincho", "MS PMincho", serif;
     }
     .story {
       font-size: 1rem;
       overflow-wrap: anywhere;
-      white-space: pre-wrap; /* 改行やスペースをそのまま反映させる */
+      white-space: pre-wrap;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .story.hidden {
+      opacity: 0;
+      transform: translateY(10px);
     }
     .story p {
       text-indent: 1em;
@@ -114,7 +144,7 @@
       color: var(--accent);
       font-size: 1rem;
       opacity: 0;
-      transition: opacity .8s ease;
+      transition: opacity 0.8s ease;
     }
     #reply.visible { opacity: 1; }
     footer {
@@ -139,13 +169,16 @@
   </style>
 </head>
 <body>
+  <!-- 青い炎のフラッシュ用レイヤー -->
+  <div id="flame-overlay"></div>
+
   <main class="page">
     <header>
       <div class="date">OCTOBER 31</div>
       <h1>ただいまシンデレラ</h1>
     </header>
 
-    <article class="story">
+    <article class="story" id="story-content">
 「ヒーロー、おかえり」
 　明かりがついているのは妙だと思った。消し忘れたかな、とリビングのドアを開けた瞬間、黒髪の男が振り返って笑いかけてきたから、俺は思わず買い物袋を落とした。フローリングの床へカップ麺がいくつも転がる。
 「ハ、喜びのあまりそのよく回る口も動かねえってか？　歓迎されて嬉しいよ」
@@ -310,21 +343,45 @@
     const form = document.getElementById("name-form");
     const input = document.getElementById("name-input");
     const reply = document.getElementById("reply");
+    const overlay = document.getElementById("flame-overlay");
+    const story = document.getElementById("story-content");
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
 
       const name = input.value.trim();
       const specialNames = ["荼毘", "轟燈矢", "燈矢"];
+      const isMatch = specialNames.includes(name);
 
-      reply.textContent = specialNames.includes(name)
-        ? "Match found その人は、蒼炎の向こうで待っています。"
-        : "error 申し訳ございません。対象が見つかりませんでした。";
-
+      // まずメッセージを一旦リセット
       reply.classList.remove("visible");
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => reply.classList.add("visible"));
-      });
+
+      if (isMatch) {
+        // 【正解の演出】本文が一瞬消え、青い炎の光が走り、元に戻る
+        story.classList.add("hidden");
+        overlay.classList.add("active");
+
+        setTimeout(() => {
+          story.classList.remove("hidden"); // 本文が戻る
+        }, 600);
+
+        setTimeout(() => {
+          overlay.classList.remove("active"); // 炎が消える
+        }, 1200);
+
+        // 演出の少し後にメッセージを表示
+        setTimeout(() => {
+          reply.textContent = "Match found その人は、蒼炎の向こうで待っています。";
+          reply.classList.add("visible");
+        }, 800);
+
+      } else {
+        // 【不正解の場合】通常通りエラーメッセージを出すだけ
+        reply.textContent = "error 申し訳ございません。対象が見つかりませんでした。";
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => reply.classList.add("visible"));
+        });
+      }
     });
   </script>
 </body>
