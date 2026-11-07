@@ -456,15 +456,15 @@
           reply.classList.add("visible");
         }, 800);
 
-      } else {
-
-        // 隠された続きの文章を表示
+　　　　// 隠された続きの文章を表示
         setTimeout(() => {
           const continuation = document.getElementById("continuation");
           continuation.classList.add("visible");
           continuation.setAttribute("aria-hidden", "false");
           continuation.scrollIntoView({ behavior: "smooth", block: "start" });
         }, 800);
+        
+      } else {
         
         // 【不正解の場合】通常通りエラーメッセージを出すだけ
         reply.textContent = "error 申し訳ございません。対象が見つかりませんでした。";
