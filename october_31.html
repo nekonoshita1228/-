@@ -182,35 +182,37 @@
     }
 
     .door-knock {
-  position: relative;
-  margin: 4em auto;
-  min-height: 3em;
-  text-align: center;
-  color: #a9a9a9;
-  font-size: 1.3rem;
-  letter-spacing: 0.5em;
-  line-height: 2.5;
-  opacity: 0;
-  filter: blur(8px);
-  transform: scale(0.9);
-  transition:
-    opacity 1.2s ease,
-    filter 1.2s ease,
-    transform 1.2s ease;
-}
+      display: block;
+      position: relative;
+      min-height: 9em;
+      margin: 3em auto;
+      padding: 2em 0;
+      text-align: center;
+      color: #a9a9a9;
+      font-size: 1.3rem;
+      letter-spacing: 0.5em;
+      line-height: 2.5;
+      opacity: 0;
+      filter: blur(12px);
+      transform: scale(0.96);
+      transition:
+        opacity 0.8s ease,
+        filter 0.8s ease,
+        transform 0.8s ease;
+    }
 
-.door-knock.visible {
-  opacity: 0.85;
-  filter: blur(0);
-  transform: scale(1);
-}
+    .door-knock.visible {
+      opacity: 0.85;
+      filter: blur(0);
+      transform: scale(1);
+    }
 
-.door-knock.fading {
-  opacity: 0;
-  filter: blur(12px);
-  transform: scale(1.15);
-}
-    
+    @media (prefers-reduced-motion: reduce) {
+      .door-knock {
+        transition: none;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -228,7 +230,7 @@
 　明かりがついているのは妙だと思った。消し忘れたかな、とリビングのドアを開けた瞬間、黒髪の男が振り返って笑いかけてきたから、俺は思わず買い物袋を落とした。フローリングの床へカップ麺がいくつも転がる。
 「ハ、喜びのあまりそのよく回る口も動かねえってか？　歓迎されて嬉しいよ」
 　LEDの白い光が黒い襤褸のコートをまとうヴィランを照らしている。解放戦線の隊長格、個性〝蒼炎〟をもつ荼毘。俺を最後まで信じてくれなかった手強い男だ。
-　いい加減、部屋に勝手に入るのやめろよ。　ここ公安が借り上げてるんだよ。ヴィランが常駐してたら変に思われるだろ。
+　いい加減、部屋に勝手に入るのやめろよ。ここ公安が借り上げてるんだよ。ヴィランが常駐してたら変に思われるだろ。
 　そう言って肩を小突けたらどれだけ清々しいだろう。でも、そんなことはありえない。
 「夢……？」
 　俺はふらふらと吸い寄せられるように眉をひそめる荼毘に近づいた。出会った頃、あんなに不気味だった両眼の下の半円形の火傷が懐かしい。
@@ -289,7 +291,7 @@
 「俺がいることを話さなくてよかったのか？　公安だろ」
 　そう言うと、ベランダの向こうへ視線がそれた。つられて見れば、カーテンは全開でガラスにリビングが反射して映り込んでいたけれど、俺しか映っていなかった。左を向くと、椅子に腰掛けた男の横顔が見える。爛れた肌がめくれて血が滲んでいるのまでくっきりと。少し身じろぎするだけで耳に大量についた金属製のイヤーカフが電灯を反射する。長い睫毛の下で、明け方の空を閉じ込めたような蒼い瞳が瞬いた。
 「話さなくていいんだ。俺は今、自由だから」
-　シャツを脱ごうとしたところで、ふいにノックの音がした。<div id="door-knock" class="door-knock"></div>時計はもう二十三時を過ぎており、宅配を頼んだ覚えもない。何かの物音と聞き違えたかと耳を澄ませば、ドンドンドン、とより強くなった。
+　シャツを脱ごうとしたところで、ふいにノックの音がした。<div id="door-knock" class="door-knock" aria-hidden="true"></div>時計はもう二十三時を過ぎており、宅配を頼んだ覚えもない。何かの物音と聞き違えたかと耳を澄ませば、ドンドンドン、とより強くなった。
 「こんな夜更けに愉快なお客様じゃねえか。俺が開けてやろうか」
 「いいよ、自分で開ける」
 　念のためにドアスコープを覗いたが、ごみでも飛んできて貼り付いているのか蒼くて何も見えない。羽根を一枚ドアの隙間から外へ滑らせられたらよかったけど仕方ない。ドアノブに手をかけようとした時だった。
@@ -500,52 +502,64 @@
       } else {
         
         // 【不正解の場合】通常通りエラーメッセージを出すだけ
-        reply.textContent = "error 申し訳ございません。対象が見つかりませんでした。";
+        reply.textContent = "error 申し訳ございません。対象はあの世に存在しません。";
         requestAnimationFrame(() => {
           requestAnimationFrame(() => reply.classList.add("visible"));
         });
       }
 
-      // スクロールに応じて増えていくドアの音
-const doorKnock = document.getElementById("door-knock");
-
-const knockStages = [
-  "どん",
-  "どん　どん",
-  "どん　どん　どん",
-  "どん　どん　どんどん",
-  "どん　どん　どんどんどんどん",
-  "どんどんどんどんどんどん"
-];
-
-const knockObserver = new IntersectionObserver((entries) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      const progress = Math.min(
-        1,
-        Math.max(0, (window.innerHeight - entry.boundingClientRect.top) / window.innerHeight)
-      );
-
-      const stage = Math.min(
-        knockStages.length - 1,
-        Math.floor(progress * knockStages.length)
-      );
-
-      doorKnock.textContent = knockStages[stage];
-      doorKnock.classList.add("visible");
-      doorKnock.classList.remove("fading");
-    } else {
-      doorKnock.classList.remove("visible");
-      doorKnock.classList.add("fading");
-    }
-  });
-}, {
-  threshold: 0
-});
-
-knockObserver.observe(doorKnock);
-    
     });
+
+    // スクロール位置に合わせて「どん」を増やし、通り過ぎると消す
+    const doorKnock = document.getElementById("door-knock");
+
+    const knockStages = [
+      "どん",
+      "どん　どん",
+      "ただいま",
+      "どんどんどんどん",
+      "どんどんどんどんどんどんどんどんどんどん",
+      "開けろよ、鷹見啓悟"
+    ];
+
+    let knockTicking = false;
+
+    function updateDoorKnock() {
+      const rect = doorKnock.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const isInView = rect.bottom > 0 && rect.top < viewportHeight;
+
+      if (isInView) {
+        // 画面の下から入り、上へ抜けるにつれて音を増やす
+        const progress = Math.min(
+          0.999,
+          Math.max(0, (viewportHeight - rect.top) / (viewportHeight + rect.height))
+        );
+        const stage = Math.min(
+          knockStages.length - 1,
+          Math.floor(progress * knockStages.length)
+        );
+
+        doorKnock.textContent = knockStages[stage];
+        doorKnock.classList.add("visible");
+      } else {
+        doorKnock.classList.remove("visible");
+      }
+
+      knockTicking = false;
+    }
+
+    function requestKnockUpdate() {
+      if (!knockTicking) {
+        knockTicking = true;
+        requestAnimationFrame(updateDoorKnock);
+      }
+    }
+
+    window.addEventListener("scroll", requestKnockUpdate, { passive: true });
+    window.addEventListener("resize", requestKnockUpdate);
+    updateDoorKnock();
+
   </script>
 </body>
 </html>
