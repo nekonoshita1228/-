@@ -180,6 +180,37 @@
       html { scroll-behavior: auto; }
       *, *::before, *::after { transition-duration: .01ms !important; }
     }
+
+    .door-knock {
+  position: relative;
+  margin: 4em auto;
+  min-height: 3em;
+  text-align: center;
+  color: #a9a9a9;
+  font-size: 1.3rem;
+  letter-spacing: 0.5em;
+  line-height: 2.5;
+  opacity: 0;
+  filter: blur(8px);
+  transform: scale(0.9);
+  transition:
+    opacity 1.2s ease,
+    filter 1.2s ease,
+    transform 1.2s ease;
+}
+
+.door-knock.visible {
+  opacity: 0.85;
+  filter: blur(0);
+  transform: scale(1);
+}
+
+.door-knock.fading {
+  opacity: 0;
+  filter: blur(12px);
+  transform: scale(1.15);
+}
+    
   </style>
 </head>
 <body>
@@ -258,7 +289,7 @@
 「俺がいることを話さなくてよかったのか？　公安だろ」
 　そう言うと、ベランダの向こうへ視線がそれた。つられて見れば、カーテンは全開でガラスにリビングが反射して映り込んでいたけれど、俺しか映っていなかった。左を向くと、椅子に腰掛けた男の横顔が見える。爛れた肌がめくれて血が滲んでいるのまでくっきりと。少し身じろぎするだけで耳に大量についた金属製のイヤーカフが電灯を反射する。長い睫毛の下で、明け方の空を閉じ込めたような蒼い瞳が瞬いた。
 「話さなくていいんだ。俺は今、自由だから」
-　シャツを脱ごうとしたところで、ふいにノックの音がした。時計はもう二十三時を過ぎており、宅配を頼んだ覚えもない。何かの物音と聞き違えたかと耳を澄ませば、ドンドンドン、とより強くなった。
+　シャツを脱ごうとしたところで、ふいにノックの音がした。<div id="door-knock" class="door-knock"></div>時計はもう二十三時を過ぎており、宅配を頼んだ覚えもない。何かの物音と聞き違えたかと耳を澄ませば、ドンドンドン、とより強くなった。
 「こんな夜更けに愉快なお客様じゃねえか。俺が開けてやろうか」
 「いいよ、自分で開ける」
 　念のためにドアスコープを覗いたが、ごみでも飛んできて貼り付いているのか蒼くて何も見えない。羽根を一枚ドアの隙間から外へ滑らせられたらよかったけど仕方ない。ドアノブに手をかけようとした時だった。
@@ -472,6 +503,46 @@
           requestAnimationFrame(() => reply.classList.add("visible"));
         });
       }
+
+      // スクロールに応じて増えていくドアの音
+const doorKnock = document.getElementById("door-knock");
+
+const knockStages = [
+  "どん",
+  "どん　どん",
+  "どん　どん　どん",
+  "どん　どん　どんどん",
+  "どん　どん　どんどんどんどん",
+  "どんどんどんどんどんどん"
+];
+
+const knockObserver = new IntersectionObserver((entries) => {
+  entries.forEach((entry) => {
+    if (entry.isIntersecting) {
+      const progress = Math.min(
+        1,
+        Math.max(0, (window.innerHeight - entry.boundingClientRect.top) / window.innerHeight)
+      );
+
+      const stage = Math.min(
+        knockStages.length - 1,
+        Math.floor(progress * knockStages.length)
+      );
+
+      doorKnock.textContent = knockStages[stage];
+      doorKnock.classList.add("visible");
+      doorKnock.classList.remove("fading");
+    } else {
+      doorKnock.classList.remove("visible");
+      doorKnock.classList.add("fading");
+    }
+  });
+}, {
+  threshold: 0
+});
+
+knockObserver.observe(doorKnock);
+    
     });
   </script>
 </body>
