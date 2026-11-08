@@ -395,6 +395,23 @@ button {
 }
 
 	
+
+/* =========================
+   スタート画面のBGM切り替え
+========================= */
+#bgm-toggle {
+    margin: 0 0 12px;
+    padding: 10px 22px;
+    background: rgba(255,255,255,0.95);
+    color: #16394d;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#bgm-toggle:active {
+    transform: scale(0.98);
+}
+
 </style>
 </head>
 
@@ -507,6 +524,10 @@ button {
             はなす：下がる<br>
         </p>
 
+        <button id="bgm-toggle" type="button" aria-pressed="true">
+            ♪ BGM：ON
+        </button>
+
         <button id="start-button">
             さがす
         </button>
@@ -554,37 +575,45 @@ const lifeText = document.getElementById("life");
 const timeText = document.getElementById("time");
 
 /* =========================================
-   BGM
+   BGM（スタート画面でON/OFFを選択）
 ========================================= */
 
-const bgm = new Audio("./ホークスとかばんをさがそう.mp3");
-
+const bgm = new Audio();
+bgm.src = new URL("./ホークスとかばんをさがそう.mp3", document.baseURI).href;
 bgm.preload = "auto";
-bgm.loop = false;     // 曲をループさせない
-bgm.volume = 0.5;     // 音量（0.0～1.0）
+bgm.loop = false; // 約45秒の曲なのでループしない
+
+const bgmButton = document.getElementById("bgm-toggle");
+let bgmEnabled = true;
+
+bgmButton.addEventListener("click", () => {
+    bgmEnabled = !bgmEnabled;
+    bgmButton.textContent = bgmEnabled ? "♪ BGM：ON" : "♪ BGM：OFF";
+    bgmButton.setAttribute("aria-pressed", String(bgmEnabled));
+});
 
 function playBgm() {
-    // 再生位置を最初に戻す
-    bgm.pause();
-    bgm.currentTime = 0;
+    if (!bgmEnabled) return;
 
-    // BGM再生
+    bgm.currentTime = 0;
     const playPromise = bgm.play();
 
-    // 再生できなかった場合はコンソールに記録
     if (playPromise !== undefined) {
         playPromise.catch((error) => {
-            console.warn("BGMの再生に失敗しました:", error);
+            console.error("BGMを再生できません。MP3のファイル名・保存場所を確認してください。", error);
         });
     }
 }
 
-// BGM停止
 function stopBgm() {
     bgm.pause();
     bgm.currentTime = 0;
 }
-	
+
+bgm.addEventListener("error", () => {
+    console.error("BGMファイルを読み込めませんでした。", bgm.currentSrc, bgm.error);
+});
+
 /* =========================================
    画像ファイル名の設定
    ファイル名を変えたら、ここだけ直してください。
@@ -1447,7 +1476,10 @@ function startGame() {
 
 
     running = true;
+
+    // スタートボタンを押した操作をきっかけにBGMを再生
     playBgm();
+
     currentBackgroundStage = 0;
     currentHawksMode = "";
     updateVisualStage(0);
@@ -1549,6 +1581,7 @@ function clearGame() {
 
 
     running = false;
+
     stopBgm();
 
     clearInterval(
@@ -1615,7 +1648,9 @@ function clearGame() {
 function gameOver(reason) {
 
     running = false;
+
     stopBgm();
+
     clearInterval(
         window.flameTimer
     );
