@@ -1549,7 +1549,7 @@ function clearGame() {
 
 
     running = false;
-
+    stopBgm();
 
     clearInterval(
         window.flameTimer
@@ -1615,7 +1615,7 @@ function clearGame() {
 function gameOver(reason) {
 
     running = false;
-
+    stopBgm();
     clearInterval(
         window.flameTimer
     );
