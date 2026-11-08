@@ -554,6 +554,38 @@ const lifeText = document.getElementById("life");
 const timeText = document.getElementById("time");
 
 /* =========================================
+   BGM
+========================================= */
+
+const bgm = new Audio("./ホークスとかばんをさがそう.mp3");
+
+bgm.preload = "auto";
+bgm.loop = false;     // 曲をループさせない
+bgm.volume = 0.5;     // 音量（0.0～1.0）
+
+function playBgm() {
+    // 再生位置を最初に戻す
+    bgm.pause();
+    bgm.currentTime = 0;
+
+    // BGM再生
+    const playPromise = bgm.play();
+
+    // 再生できなかった場合はコンソールに記録
+    if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+            console.warn("BGMの再生に失敗しました:", error);
+        });
+    }
+}
+
+// BGM停止
+function stopBgm() {
+    bgm.pause();
+    bgm.currentTime = 0;
+}
+	
+/* =========================================
    画像ファイル名の設定
    ファイル名を変えたら、ここだけ直してください。
 ========================================= */
