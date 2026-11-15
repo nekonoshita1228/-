@@ -334,3 +334,16 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .puzzle-submit { font-size: 13px; }
   .check-panel-inner { padding-inline: 14px; }
 }
+/* 客室・山荘の写真を全体表示する */
+.room-visual {
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+}
+
+.room-visual img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
