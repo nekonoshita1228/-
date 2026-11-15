@@ -1,347 +1,180 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>謎解きチャット デモ</title>
-<style>
-  :root{
-    --bg:#0d0f13;
-    --panel:#151922;
-    --panel2:#1d2430;
-    --text:#f4f6f8;
-    --muted:#9aa4b2;
-    --accent:#61d7ff;
-    --danger:#ff8a8a;
-    --ok:#8ff0b3;
-    --line:#2b3442;
-  }
-
-  * { box-sizing: border-box; }
-
-  body{
-    margin:0;
-    min-height:100dvh;
-    background:
-      radial-gradient(circle at 15% 15%, rgba(97,215,255,.09), transparent 32%),
-      radial-gradient(circle at 85% 80%, rgba(97,215,255,.05), transparent 28%),
-      var(--bg);
-    color:var(--text);
-    font-family:
-      -apple-system, BlinkMacSystemFont, "Segoe UI",
-      "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
-  }
-
-  .app{
-    width:min(100%, 520px);
-    min-height:100dvh;
-    margin:0 auto;
-    background:rgba(13,15,19,.88);
-    display:flex;
-    flex-direction:column;
-  }
-
-  header{
-    position:sticky;
-    top:0;
-    z-index:10;
-    padding:14px 16px;
-    border-bottom:1px solid var(--line);
-    background:rgba(13,15,19,.94);
-    backdrop-filter:blur(12px);
-  }
-
-  .title{
-    font-size:15px;
-    font-weight:700;
-    letter-spacing:.04em;
-  }
-
-  .status{
-    margin-top:3px;
-    font-size:12px;
-    color:var(--muted);
-  }
-
-  #chat{
-    flex:1;
-    padding:18px 14px 150px;
-    overflow-y:auto;
-  }
-
-  .row{
-    display:flex;
-    margin:10px 0;
-    animation:pop .2s ease-out both;
-  }
-
-  .row.system{ justify-content:flex-start; }
-  .row.user{ justify-content:flex-end; }
-
-  .bubble{
-    max-width:82%;
-    padding:11px 13px;
-    line-height:1.65;
-    border-radius:16px;
-    font-size:15px;
-    white-space:pre-wrap;
-    word-break:break-word;
-  }
-
-  .system .bubble{
-    background:var(--panel2);
-    border:1px solid var(--line);
-    border-bottom-left-radius:5px;
-  }
-
-  .user .bubble{
-    background:#123243;
-    border:1px solid #1e536c;
-    border-bottom-right-radius:5px;
-  }
-
-  .bubble.error{
-    border-color:#6b3232;
-    background:#2d1719;
-  }
-
-  .bubble.success{
-    border-color:#315f43;
-    background:#163123;
-  }
-
-  .speaker{
-    font-size:11px;
-    color:var(--muted);
-    margin:0 0 4px 4px;
-  }
-
-  .composer-wrap{
-    position:fixed;
-    left:50%;
-    bottom:0;
-    transform:translateX(-50%);
-    width:min(100%, 520px);
-    padding:10px 12px calc(10px + env(safe-area-inset-bottom));
-    background:linear-gradient(to top, rgba(13,15,19,1) 70%, rgba(13,15,19,.92));
-    border-top:1px solid var(--line);
-  }
-
-  .composer{
-    display:flex;
-    gap:8px;
-    align-items:center;
-  }
-
-  input{
-    flex:1;
-    min-width:0;
-    height:46px;
-    border:1px solid var(--line);
-    border-radius:14px;
-    background:#10141b;
-    color:var(--text);
-    padding:0 14px;
-    font-size:16px; /* iPhoneの自動ズーム回避 */
-    outline:none;
-  }
-
-  input:focus{
-    border-color:var(--accent);
-    box-shadow:0 0 0 3px rgba(97,215,255,.10);
-  }
-
-  button{
-    height:46px;
-    padding:0 16px;
-    border:0;
-    border-radius:14px;
-    background:var(--accent);
-    color:#06131a;
-    font-weight:800;
-    cursor:pointer;
-    font-size:14px;
-  }
-
-  button:disabled{
-    opacity:.45;
-    cursor:default;
-  }
-
-  .hint{
-    margin-top:8px;
-    font-size:11px;
-    color:var(--muted);
-    text-align:center;
-  }
-
-  @keyframes pop{
-    from{opacity:0; transform:translateY(5px)}
-    to{opacity:1; transform:translateY(0)}
-  }
-
-  @media (min-width:700px){
-    body{ padding:24px 0; }
-    .app{
-      min-height:calc(100dvh - 48px);
-      border:1px solid var(--line);
-      border-radius:24px;
-      overflow:hidden;
-      box-shadow:0 28px 80px rgba(0,0,0,.35);
-    }
-    .composer-wrap{
-      bottom:24px;
-      border-left:1px solid var(--line);
-      border-right:1px solid var(--line);
-      border-bottom-left-radius:24px;
-      border-bottom-right-radius:24px;
-    }
-  }
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#e9e8df">
+  <meta name="description" content="山の静けさに身をゆだねる、群訝山荘のご案内">
+  <title>群訝山荘 | GUNGA SANSO</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
-<div class="app">
-  <header>
-    <div class="title">謎解きチャット・試作</div>
-    <div class="status">ブラウザ版 / スマホ対応</div>
-  </header>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
 
-  <main id="chat" aria-live="polite"></main>
-</div>
+  <div class="transition-screen" id="transition-screen" aria-hidden="true">
+    <span class="transition-mark">G</span>
+  </div>
 
-<div class="composer-wrap">
-  <form class="composer" id="answerForm">
-    <input
-      id="answer"
-      type="text"
-      autocomplete="off"
-      autocapitalize="off"
-      spellcheck="false"
-      placeholder="答えを入力"
-      aria-label="答え"
-    >
-    <button id="sendBtn" type="submit">送信</button>
-  </form>
-  <div class="hint">デモ用の正解：荼毘の正体は？</div>
-</div>
+  <!-- 表側：群訝山荘 -->
+  <div id="inn-site">
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="群訝山荘 トップ">
+        <span class="brand-mark" aria-hidden="true">D</span>
+        <span class="brand-name"><strong>群訝山荘</strong><small>GUNGA SANSO</small></span>
+      </a>
+      <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span class="sr-only">メニューを開く</span>
+      </button>
+      <nav class="main-nav" id="main-nav" aria-label="メインメニュー">
+        <a href="#concept">群訝山荘について</a>
+        <a href="#rooms">客室</a>
+        <a href="#guide">ご利用案内</a>
+        <a class="nav-contact" href="#check-panel">予約の確認 <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
 
-<script>
-  // ===== ここだけ差し替えれば内容を変更できます =====
-  const ACCEPTED_ANSWERS = ["燈矢", "轟燈矢","とうや"];
+    <main id="main-content">
+      <section class="hero" id="top" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span>A space of freedom that liberates you from the pressures of everyday life</p>
+          <h1 id="hero-title">雄大な自然に、<br>身をゆだねる。</h1>
+          <p class="hero-lead">日常から離れ、自然の呼吸に耳を澄ます。<br>群訝山荘で、身も心も解放された時間をお過ごしください。</p>
+          <a class="text-link" href="#concept">群訝山荘について <span aria-hidden="true">↘</span></a>
+        </div>
+        <div class="hero-landscape">
+          <img class="hero-photo" src="images/exterior.jpg" alt="緑に囲まれた群訝山荘の建物外観">
+          <div class="landscape-caption"><span>01</span> GUNGA SANSO / EXTERIOR</div>
+        </div>
+        <div class="hero-side-note">Detnerat Company<span>—</span> GUNGA SANSO</div>
+      </section>
 
-  // 仮台詞です。あとでユーザーさん作の台詞に丸ごと差し替えできます。
-  const WRONG_REPLIES = [
-    "すげえなァ、なーんにも見えてねえ",
-    "ゴミか。付せろ",
-    "ハッ、てめえも俺と同じ失敗作だ。仲良くやろうぜ"
-  ];
-
-  const INTRO_MESSAGES = [
-    "来たか、ヒーロー",
-    "随分遅かったな。羽を伸ばしすぎだ。当然もう答えは分かるな？　",
-    "入力して送れ"
-  ];
-
-  const CORRECT_REPLY = "正解。期待してるよ";
-  // ============================================
-
-  const chat = document.getElementById("chat");
-  const form = document.getElementById("answerForm");
-  const input = document.getElementById("answer");
-  const sendBtn = document.getElementById("sendBtn");
-
-  function normalize(text){
-    return text
-      .trim()
-      .toLowerCase()
-      .normalize("NFKC")
-      .replace(/\s+/g, "");
-  }
-
-  function addBubble(text, type="system", state=""){
-    const row = document.createElement("div");
-    row.className = `row ${type}`;
-
-    const wrap = document.createElement("div");
-
-    if(type === "system"){
-      const speaker = document.createElement("div");
-      speaker.className = "speaker";
-      speaker.textContent = "荼毘";
-      wrap.appendChild(speaker);
-    }
-
-    const bubble = document.createElement("div");
-    bubble.className = `bubble ${state}`;
-    bubble.textContent = text;
-
-    wrap.appendChild(bubble);
-    row.appendChild(wrap);
-    chat.appendChild(row);
-
-    requestAnimationFrame(() => {
-      chat.scrollTo({ top: chat.scrollHeight, behavior: "smooth" });
-    });
-  }
-
-  async function showIntro(){
-    for(const msg of INTRO_MESSAGES){
-      await wait(380);
-      addBubble(msg);
-    }
-  }
-
-  function wait(ms){
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const raw = input.value;
-    if(!raw.trim()) return;
-
-    addBubble(raw, "user");
-    input.value = "";
-    sendBtn.disabled = true;
-    input.disabled = true;
-
-    await wait(450);
-
-    const answer = normalize(raw);
-    const isCorrect = ACCEPTED_ANSWERS.some(a => normalize(a) === answer);
-
-    if(isCorrect){
-      addBubble(CORRECT_REPLY, "system", "success");
-
-      await wait(450);
-
-      const next = document.createElement("div");
-      next.className = "row system";
-      next.innerHTML = `
-        <div>
-          <div class="speaker">SYSTEM</div>
-          <div class="bubble success">
-            <strong>第1問クリア</strong><br>
-            ここに「次の展示を見る」ボタンやリンクを出せます。
+      <section class="intro-section section-wrap" id="concept">
+        <div class="section-kicker">OUR CONCEPT <span>01</span></div>
+        <div class="intro-grid">
+          <h2>あなた自身を、<br><em>ここで解放する。</em></h2>
+          <div class="intro-text">
+            <p>木々のざわめき、移ろう光、澄んだ空気。群訝山荘は、デトネラット社所有の自然に囲まれた宿です。</p>
+            <p>わたしたちの経営理念は、すべての人を〝解放〟する。開放的な空間で個性を発揮したり、ゆっくりと食事を楽しんだり。ここで過ごす時間が、日々のストレスから解放してくれます。</p>
           </div>
         </div>
-      `;
-      chat.appendChild(next);
-      chat.scrollTo({top: chat.scrollHeight, behavior:"smooth"});
+        <div class="concept-strip" aria-label="群訝山荘の特徴">
+          <article><span class="concept-number">01</span><h3>雄大な自然</h3><p>豊かな山々に包まれた、解放感のある滞在。</p></article>
+          <article><span class="concept-number">02</span><h3>自由な空間</h3><p>どんな個性も、ありのままの自分で過ごせる部屋。</p></article>
+          <article><span class="concept-number">03</span><h3>うつろう時間</h3><p>空を見上げるたび表情が変わっていく、あなた。</p></article>
+        </div>
+      </section>
 
-      input.placeholder = "クリア済み";
-    }else{
-      const reply = WRONG_REPLIES[Math.floor(Math.random() * WRONG_REPLIES.length)];
-      addBubble(reply, "system", "error");
+      <section class="rooms-section" id="rooms">
+        <div class="section-wrap">
+          <div class="section-heading">
+            <div><div class="section-kicker">ROOMS & SPACES <span>02</span></div><h2>客室のご案内</h2></div>
+            <p>自然の景色を眺めながら、<br>開放的な空間でお過ごしいただけます。</p>
+          </div>
+          <div class="room-grid room-grid-feature">
+            <article class="room-card room-card-feature">
+              <figure class="room-visual room-photo">
+                <img class="room-photo-image" src="images/private-room.jpg" alt="大きな窓から山並みを望む、白を基調とした個室">
+                <figcaption class="room-visual-label">ROOM 811 / PRIVATE ROOM</figcaption>
+              </figure>
+            </article>
+            <div class="room-feature-copy">
+              <p class="room-feature-kicker">A VIEW FROM YOUR ROOM</p>
+              <h3>窓辺に広がる、<br><em>山の景色。</em></h3>
+              <p>大きな窓の向こうに山並みを望む、明るく落ち着いた個室。ゆったりとした寝具に身を預け、日常の熱を冷ます静かな時間をお過ごしいただけます。</p>
+              <span class="room-feature-index">GUNGA SANSO <i>／</i> PRIVATE ROOM</span>
+            </div>
+          </div>
+          <p class="small-note">※ 現在、8階客室の予約は休止しております。</p>
+        </div>
+      </section>
 
-      sendBtn.disabled = false;
-      input.disabled = false;
-      input.focus();
-    }
-  });
+      <section class="guide-section section-wrap" id="guide">
+        <div class="section-kicker">INFORMATION <span>03</span></div>
+        <div class="guide-grid">
+          <div><h2>ご利用案内</h2><p class="guide-lead">安心してご宿泊いただくために、<br>必ずご案内をご確認ください。</p></div>
+          <div class="guide-list">
+            <div><span>01</span><p>施設内では、ほかのお客様へのご配慮をお願いいたします。</p></div>
+            <div><span>02</span><p>山の天候は変わりやすいため、周辺の散策には十分ご注意ください。</p></div>
+            <div><span>03</span><p>当施設は全室完全予約制です。当日宿泊はお断りいたします。</p></div>
+          </div>
+        </div>
+      </section>
 
-  showIntro();
-</script>
+      <!-- 答え入力欄。問題数と正解は script.js の PUZZLES を編集します。 -->
+      <section class="check-section" id="check-panel">
+        <div class="section-wrap check-wrap">
+          <div class="check-heading">
+            <div class="section-kicker">BEFORE YOUR STAY <span>04</span></div>
+            <h2>ご案内の確認</h2>
+            <p>ご案内に記載された確認事項をご入力ください。</p>
+          </div>
+          <div class="check-panel-inner">
+            <div class="check-panel-top"><span>GUNKEN SANSO / GUEST DESK</span><span id="progress-label">確認済み 0 / 4</span></div>
+            <div class="progress-track" aria-hidden="true"><span id="progress-bar"></span></div>
+            <div class="test-mode-panel" id="test-mode-panel" hidden>
+              <strong>TEST MODE / 動作確認用</strong>
+              <span>各欄に「テスト1」「テスト2」「テスト3」「テスト4」と入力すると、最後に秘密のサイトへ切り替わります。</span>
+              <button type="button" id="reset-test-progress">テスト進行をリセット</button>
+            </div>
+            <div class="puzzle-list" id="puzzle-list" aria-live="polite">
+              <p class="loading-note">確認欄を読み込んでいます。</p>
+            </div>
+            <p class="check-footnote">入力内容はこの端末のブラウザ内に保存されます。</p>
+            <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand footer-brand" href="#top"><span class="brand-mark" aria-hidden="true">D</span><span class="brand-name"><strong>群訝山荘</strong><small>GUNGA SANSO</small></span></a>
+      <p>雄大な自然に、自分を解放する。</p>
+      <small>© GUNGASANSO. ALL RIGHTS RESERVED.</small>
+    </footer>
+  </div>
+
+  <!-- 裏側：全問正解後に表示 -->
+  <div id="liberation-site" class="liberation-site" hidden>
+    <div class="classified-bar"><span>UNOFFICIAL ARCHIVE / INTERNAL NETWORK</span><span>ACCESS LEVEL : CONFIRMED</span></div>
+    <div class="liberation-test-banner" id="liberation-test-banner" hidden>
+      <span>TEST MODE — これは動作確認用の表示です。本番表示ではありません。</span>
+      <button type="button" id="reset-test-progress-secret">最初からテストする</button>
+    </div>
+    <header class="liberation-header">
+      <a class="liberation-brand" href="#liberation-top"><span class="liberation-symbol" aria-hidden="true">⟡</span><span><strong>超常解放戦線</strong><small>PARANORMAL LIBERATION FRONT</small></span></a>
+      <nav aria-label="内部メニュー" class="liberation-nav">
+        <a href="#organization">組織概要</a><a href="#members">構成員</a><a href="#records">活動記録</a>
+      </nav>
+    </header>
+    <main class="liberation-main" id="liberation-top">
+      <section class="liberation-hero">
+        <div class="liberation-hero-copy">
+          <p class="red-kicker">THE OLD ORDER ENDS HERE</p>
+          <p class="liberation-overline">ACCESS GRANTED <span>／</span> INTERNAL DOCUMENT</p>
+          <h1>個性を、<br><em>解放せよ。</em></h1>
+          <p class="liberation-lead">この世界に敷かれた秩序を疑い、<br>あるべき姿を自らの手で選び取る。</p>
+          <a class="liberation-link" href="#organization">記録を閲覧する <span aria-hidden="true">↓</span></a>
+        </div>
+        <div class="liberation-graphic" aria-hidden="true"><div class="graphic-ring ring-one"></div><div class="graphic-ring ring-two"></div><div class="graphic-cross"></div><span>PLF<br>ARCHIVE</span></div>
+        <div class="liberation-index">FILE NO. 001 <span>—</span> RESTRICTED</div>
+      </section>
+      <section class="liberation-section" id="organization">
+        <div class="liberation-section-label"><span>01</span> ORGANIZATION</div>
+        <div class="liberation-section-content"><h2>組織概要</h2><p>超常解放戦線は、既存の社会秩序と超常の力をめぐる価値観に異議を唱える組織である。</p><p class="placeholder-copy">敵連合と異能解放軍は、ここに「超常解放戦線」結成を宣言する。すべての人類に、個性の解放を！</p></div>
+      </section>
+      <section class="liberation-section members-section" id="members">
+        <div class="liberation-section-label"><span>02</span> MEMBERS</div>
+        <div class="liberation-section-content"><h2>構成員</h2><div class="member-grid"><article><span>01 / LEADERSHIP</span><h3>統率</h3><p>組織を導く者たち。</p></article><article><span>02 / CORE</span><h3>中核</h3><p>計画の中心を担う者たち。</p></article><article><span>03 / NETWORK</span><h3>連絡網</h3><p>各地に広がる協力者たち。</p></article></div></div>
+      </section>
+      <section class="liberation-section" id="records">
+        <div class="liberation-section-label"><span>03</span> ACTIVITY LOG</div>
+        <div class="liberation-section-content"><h2>活動記録</h2><div class="record-row"><span>LOG. 001</span><p>記録データは現在整理中。</p><small>STATUS : ARCHIVED</small></div><div class="record-row"><span>LOG. 002</span><p>閲覧可能な記録はありません。</p><small>STATUS : RESTRICTED</small></div></div>
+      </section>
+      <div class="liberation-end"><span class="end-symbol">⟡</span><p>WE WILL DEFINE OUR OWN FREEDOM.</p><small>END OF TRANSMISSION</small></div>
+    </main>
+    <footer class="liberation-footer"><span>超常解放戦線 / INTERNAL NETWORK</span><span>UNOFFICIAL FAN PROJECT</span></footer>
+  </div>
 </body>
 </html>
