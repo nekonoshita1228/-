@@ -72,19 +72,32 @@
             <div><div class="section-kicker">ROOMS & SPACES <span>02</span></div><h2>客室のご案内</h2></div>
             <p>自然の景色を眺めながら、<br>開放的な空間でお過ごしいただけます。</p>
           </div>
-          <div class="room-grid room-grid-feature">
-            <article class="room-card room-card-feature">
+          <div class="room-grid room-grid-two">
+            <article class="room-card room-card-two">
               <figure class="room-visual room-photo">
-                <img class="room-photo-image" src="images/private-room.jpg" alt="大きな窓から山並みを望む、白を基調とした個室">
+                <img class="room-photo-image" src="images/room-811.jpg" alt="大きな窓から山並みを望む客室。壁際に荼毘のジャケットが掛かっている">
                 <figcaption class="room-visual-label">ROOM 811 / PRIVATE ROOM</figcaption>
               </figure>
+              <div class="room-feature-copy">
+                <p class="room-feature-kicker">A VIEW FROM YOUR ROOM</p>
+                <h3>窓辺に広がる、<br><em>山の景色。</em></h3>
+                <p>大きな窓の向こうに山並みを望む、明るく落ち着いた個室。ゆったりとした寝具に身を預け、日常の熱を冷ます静かな時間をお過ごしいただけます。</p>
+                <span class="room-feature-index">GUNGA SANSO <i>／</i> PRIVATE ROOM</span>
+              </div>
             </article>
-            <div class="room-feature-copy">
-              <p class="room-feature-kicker">A VIEW FROM YOUR ROOM</p>
-              <h3>窓辺に広がる、<br><em>山の景色。</em></h3>
-              <p>大きな窓の向こうに山並みを望む、明るく落ち着いた個室。ゆったりとした寝具に身を預け、日常の熱を冷ます静かな時間をお過ごしいただけます。</p>
-              <span class="room-feature-index">GUNGA SANSO <i>／</i> PRIVATE ROOM</span>
-            </div>
+            <article class="room-card room-card-two">
+              <figure class="room-visual room-photo room-photo-clock">
+                <img class="room-photo-image" src="images/private-room.jpg" alt="ベッド脇のサイドテーブルにデジタル時計が置かれた客室">
+                <button class="clock-hotspot" id="open-clock" type="button" aria-label="時計を開く"></button>
+                <figcaption class="room-visual-label">ROOM 375 / PRIVATE ROOM</figcaption>
+              </figure>
+              <div class="room-feature-copy">
+                <p class="room-feature-kicker">A MOMENT OF FREEDOM</p>
+                <h3>個性を解き放つ、<br><em>時間。</em></h3>
+                <p>静かな客室に置かれた、ひとつのデジタル時計。時刻にまつわる仕掛けをお楽しみください。</p>
+                <span class="room-feature-index">GUNGA SANSO <i>／</i> PRIVATE ROOM</span>
+              </div>
+            </article>
           </div>
           <p class="small-note">※ 現在、8階客室の予約は休止しております。</p>
         </div>
@@ -176,5 +189,24 @@
     </main>
     <footer class="liberation-footer"><span>超常解放戦線 / INTERNAL NETWORK</span><span>UNOFFICIAL FAN PROJECT</span></footer>
   </div>
+
+
+  <!-- 客室375号室のデジタル時計 -->
+  <div class="clock-modal" id="clock-modal" hidden aria-hidden="true">
+    <div class="clock-modal-backdrop" data-clock-close></div>
+    <section class="clock-console" role="dialog" aria-modal="true" aria-labelledby="clock-heading">
+      <button class="clock-close" type="button" aria-label="閉じる" data-clock-close>×</button>
+      <p class="clock-console-kicker" id="clock-heading">GUNGA SANSO / ROOM 375</p>
+      <p class="clock-console-copy">個性を解き放つ、時間。</p>
+      <div class="digital-clock" aria-label="時刻設定">
+        <button class="clock-digit" id="clock-hour" type="button" aria-label="時を進める">08</button>
+        <span class="clock-colon" aria-hidden="true">:</span>
+        <button class="clock-digit" id="clock-minute" type="button" aria-label="分を進める">00</button>
+      </div>
+      <button class="clock-ok" id="clock-ok" type="button">OK</button>
+      <p class="clock-feedback" id="clock-feedback" role="status" aria-live="polite"></p>
+    </section>
+  </div>
+
 </body>
 </html>

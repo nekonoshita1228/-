@@ -334,16 +334,49 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .puzzle-submit { font-size: 13px; }
   .check-panel-inner { padding-inline: 14px; }
 }
-/* 客室・山荘の写真を全体表示する */
-.room-visual {
-  height: auto;
-  min-height: 0;
-  overflow: visible;
-}
 
-.room-visual img {
-  display: block;
-  width: 100%;
-  height: auto;
-  object-fit: contain;
+
+/* 客室を811号室・375号室の2室で掲載 */
+.room-grid-two { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:32px; align-items:start; }
+.room-card-two .room-visual { margin:0; }
+.room-card-two .room-feature-copy { padding:22px 2px 0; }
+.room-card-two .room-feature-copy h3 { margin:10px 0 12px; font-family:var(--serif); font-size:clamp(20px,2.3vw,28px); font-weight:500; line-height:1.6; letter-spacing:.08em; }
+.room-card-two .room-feature-copy h3 em { font-style:normal; }
+.room-card-two .room-feature-copy > p:not(.room-feature-kicker) { color:#687168; font-size:11px; line-height:2.1; }
+.room-feature-kicker { color:#8b927f; font-size:8px; letter-spacing:.2em; }
+.room-feature-index { display:block; margin-top:20px; color:#8a9184; font-size:8px; letter-spacing:.16em; }
+.room-feature-index i { font-style:normal; padding:0 6px; }
+@media (max-width:760px) { .room-grid-two { grid-template-columns:1fr; gap:42px; } }
+
+/* 客室写真のデジタル時計 */
+.room-photo { height: auto; aspect-ratio: 16 / 9; background: #e8e6dc; }
+.room-photo-image { display: block; position: relative; z-index: 0; width: 100%; height: 100%; object-fit: cover; }
+.room-photo::before { z-index: 1; pointer-events: none; }
+.room-photo::after { z-index: 1; pointer-events: none; }
+.clock-hotspot { position: absolute; z-index: 4; left: 69.5%; top: 51%; width: 12%; height: 19%; min-height: 44px; padding: 0; border: 0; border-radius: 8px; background: transparent; cursor: pointer; }
+.clock-hotspot:hover { background: rgba(255,255,255,.08); box-shadow: 0 0 0 1px rgba(255,255,255,.25); }
+.clock-hotspot:focus-visible { outline: 3px solid #b27c4e; outline-offset: 3px; }
+
+.clock-modal { position: fixed; z-index: 500; inset: 0; display: grid; place-items: center; padding: 22px; }
+.clock-modal[hidden] { display: none; }
+.clock-modal-backdrop { position: absolute; inset: 0; background: rgba(13,19,16,.78); backdrop-filter: blur(5px); }
+.clock-console { position: relative; z-index: 1; width: min(430px, 100%); padding: 46px 30px 32px; border: 1px solid rgba(190,204,185,.28); background: linear-gradient(145deg, #26352e, #111a16 75%); box-shadow: 0 24px 80px rgba(0,0,0,.42); color: #e7e9df; text-align: center; }
+.clock-close { position: absolute; top: 9px; right: 12px; width: 38px; height: 38px; min-height: 38px; border: 0; background: transparent; color: #aeb8aa; font-size: 27px; line-height: 1; }
+.clock-console-kicker { margin: 0; color: #aab7a8; font-size: 10px; letter-spacing: .22em; }
+.clock-console-copy { margin: 12px 0 30px; color: #d0d7c9; font-family: var(--serif); font-size: 15px; letter-spacing: .12em; }
+.digital-clock { display: flex; justify-content: center; align-items: center; gap: 8px; padding: 22px 14px; border: 1px solid rgba(189,205,185,.17); background: #080d0a; box-shadow: inset 0 0 28px rgba(0,0,0,.7); }
+.clock-digit { min-width: 94px; min-height: 84px; padding: 0 7px; border: 0; background: transparent; color: #f06b58; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: clamp(52px, 13vw, 76px); font-weight: 500; line-height: 1; letter-spacing: -.06em; text-shadow: 0 0 10px rgba(240,107,88,.35); font-variant-numeric: tabular-nums; }
+.clock-digit:active { color: #ff9a83; }
+.clock-colon { color: #d66a58; font-family: ui-monospace, monospace; font-size: 52px; transform: translateY(-4px); }
+.clock-ok { width: 100%; min-height: 50px; margin-top: 24px; border: 1px solid rgba(208,220,202,.45); background: rgba(221,231,213,.08); color: #e5eadf; font-size: 13px; letter-spacing: .24em; transition: background .2s ease; }
+.clock-ok:hover { background: rgba(221,231,213,.17); }
+.clock-feedback { min-height: 24px; margin: 14px 0 0; color: #e0b4a9; font-size: 12px; letter-spacing: .08em; }
+.clock-feedback.is-success { color: #d5e6c9; font-size: 16px; }
+.clock-feedback.is-success::before { content: ""; display: block; width: 30px; height: 1px; margin: 0 auto 12px; background: #9eb78f; }
+body.clock-open { overflow: hidden; }
+@media (max-width: 760px) {
+  .room-photo { aspect-ratio: 16 / 9; }
+  .clock-hotspot { left: 69%; top: 50%; width: 13%; height: 20%; min-height: 44px; }
+  .clock-console { padding: 44px 20px 25px; }
+  .clock-digit { min-width: 76px; min-height: 76px; }
 }

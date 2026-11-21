@@ -24,6 +24,18 @@ const formStatus = document.getElementById("form-status");
 const transitionScreen = document.getElementById("transition-screen");
 const menuToggle = document.getElementById("menu-toggle");
 const mainNav = document.getElementById("main-nav");
+const clockModal = document.getElementById("clock-modal");
+const openClockButton = document.getElementById("open-clock");
+const hourButton = document.getElementById("clock-hour");
+const minuteButton = document.getElementById("clock-minute");
+const clockOkButton = document.getElementById("clock-ok");
+const clockFeedback = document.getElementById("clock-feedback");
+
+// みながさんの謎の内容が確定したら、正解時刻と表示する答えをここに設定します。
+const CLOCK_PUZZLE = { answerHour: null, answerMinute: null, answerText: "" };
+let clockHour = 8;
+let clockMinute = 0;
+let lastClockTrigger = null;
 
 let solvedIds = new Set();
 let transitionTimer = null;
@@ -214,10 +226,73 @@ function initialize() {
   readProgress();
   renderPuzzleFields();
   setupMobileMenu();
+  setupClockPuzzle();
 
   if (PUZZLES.length > 0 && solvedIds.size === PUZZLES.length) {
     showLiberationSite(false);
   }
+}
+
+
+function renderClock() {
+  hourButton.textContent = String(clockHour).padStart(2, "0");
+  minuteButton.textContent = String(clockMinute).padStart(2, "0");
+  hourButton.setAttribute("aria-label", `時を進める。現在 ${clockHour} 時`);
+  minuteButton.setAttribute("aria-label", `分を進める。現在 ${clockMinute} 分`);
+}
+
+function openClock() {
+  if (!clockModal) return;
+  lastClockTrigger = document.activeElement;
+  clockHour = 8;
+  clockMinute = 0;
+  clockFeedback.textContent = "";
+  clockFeedback.classList.remove("is-success");
+  renderClock();
+  clockModal.hidden = false;
+  clockModal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("clock-open");
+  hourButton.focus();
+}
+
+function closeClock() {
+  if (!clockModal || clockModal.hidden) return;
+  clockModal.hidden = true;
+  clockModal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("clock-open");
+  if (lastClockTrigger && typeof lastClockTrigger.focus === "function") lastClockTrigger.focus();
+}
+
+function setupClockPuzzle() {
+  if (!clockModal || !openClockButton) return;
+  openClockButton.addEventListener("click", openClock);
+  hourButton.addEventListener("click", () => {
+    clockHour = (clockHour + 1) % 24;
+    clockFeedback.textContent = "";
+    clockFeedback.classList.remove("is-success");
+    renderClock();
+  });
+  minuteButton.addEventListener("click", () => {
+    clockMinute = (clockMinute + 1) % 60;
+    clockFeedback.textContent = "";
+    clockFeedback.classList.remove("is-success");
+    renderClock();
+  });
+  clockOkButton.addEventListener("click", () => {
+    const isConfigured = Number.isInteger(CLOCK_PUZZLE.answerHour) && Number.isInteger(CLOCK_PUZZLE.answerMinute);
+    const isCorrect = isConfigured && clockHour === CLOCK_PUZZLE.answerHour && clockMinute === CLOCK_PUZZLE.answerMinute;
+    if (isCorrect) {
+      clockFeedback.textContent = CLOCK_PUZZLE.answerText || "確認しました。";
+      clockFeedback.classList.add("is-success");
+    } else {
+      clockFeedback.textContent = "時刻が一致しません。";
+      clockFeedback.classList.remove("is-success");
+    }
+  });
+  clockModal.querySelectorAll("[data-clock-close]").forEach((element) => element.addEventListener("click", closeClock));
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeClock();
+  });
 }
 
 // 管理者用：ブラウザの開発者コンソールで resetGunkenSanso() を実行すると、進行状況を消去できます。
