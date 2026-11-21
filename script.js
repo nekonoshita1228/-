@@ -7,10 +7,10 @@
  */
 
 const PUZZLES = [
-  { id: "puzzle-1", label: "第一の確認", answer: ["仮の答え1"] },
-  { id: "puzzle-2", label: "第二の確認", answer: ["仮の答え2"] },
-  { id: "puzzle-3", label: "第三の確認", answer: ["仮の答え3"] },
-  { id: "puzzle-4", label: "第四の確認", answer: ["仮の答え4"] }
+  { id: "puzzle-1", label: "第一パスワード", answer: ["circle"] },
+  { id: "puzzle-2", label: "第二パスワード", answer: ["仮の答え2"] },
+  { id: "puzzle-3", label: "第三パスワード", answer: ["仮の答え3"] },
+  { id: "puzzle-4", label: "第四パスワード", answer: ["仮の答え4"] }
 ];
 
 const STORAGE_KEY = "gunkenSansoProgress_v1";
@@ -29,9 +29,7 @@ const hourButton = document.getElementById("clock-hour");
 const minuteButton = document.getElementById("clock-minute");
 const clockOkButton = document.getElementById("clock-ok");
 const clockFeedback = document.getElementById("clock-feedback");
-
-// みながさんの謎の内容が確定したら、正解時刻と表示する答えをここに設定します。
-const CLOCK_PUZZLE = { answerHour: 4, answerMinute: 0, answerText: "過去は消えない【Clock】" };
+const CLOCK_PUZZLE = { answerHour: 4, answerMinute: 0, answerText: "circle" };
 let clockHour = 8;
 let clockMinute = 0;
 let lastClockTrigger = null;
