@@ -8,9 +8,9 @@
 
 const PUZZLES = [
   { id: "puzzle-1", label: "第一パスワード", answer: ["circle"] },
-  { id: "puzzle-2", label: "第二パスワード", answer: ["仮の答え2"] },
-  { id: "puzzle-3", label: "第三パスワード", answer: ["仮の答え3"] },
-  { id: "puzzle-4", label: "第四パスワード", answer: ["仮の答え4"] }
+  { id: "puzzle-2", label: "第二パスワード", answer: ["villan"] },
+  { id: "puzzle-3", label: "第三パスワード", answer: ["light"] },
+  { id: "puzzle-4", label: "第四パスワード", answer: ["angel"] }
 ];
 
 const STORAGE_KEY = "gunkenSansoProgress_v1";
@@ -103,7 +103,7 @@ function createPuzzleRow(puzzle, index) {
   const button = document.createElement("button");
   button.className = "puzzle-submit";
   button.type = "button";
-  button.textContent = "照合する";
+  button.textContent = "OK";
 
   const feedback = document.createElement("p");
   feedback.className = "puzzle-feedback";
