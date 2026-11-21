@@ -1,7 +1,7 @@
 /*
  * 群訝山荘 / 謎解き進行スクリプト
  *
- * 本番公開前に、下の PUZZLES の answer を実際の答えに変更してください。
+ * 下の PUZZLES の answer を実際の答えに変更してください。
  * 問題数を増減するときは、PUZZLES の行を追加・削除するだけで大丈夫です。
  * answer は文字列でも、別解を含む配列でも設定できます。
  */
@@ -13,7 +13,6 @@ const PUZZLES = [
   { id: "puzzle-4", label: "第四の確認", answer: ["仮の答え4"] }
 ];
 
-// 本番用：URLによるテストモード切り替えはありません。
 const STORAGE_KEY = "gunkenSansoProgress_v1";
 const innSite = document.getElementById("inn-site");
 const liberationSite = document.getElementById("liberation-site");
@@ -32,7 +31,7 @@ const clockOkButton = document.getElementById("clock-ok");
 const clockFeedback = document.getElementById("clock-feedback");
 
 // みながさんの謎の内容が確定したら、正解時刻と表示する答えをここに設定します。
-const CLOCK_PUZZLE = { answerHour: null, answerMinute: null, answerText: "" };
+const CLOCK_PUZZLE = { answerHour: 4, answerMinute: 0, answerText: "過去は消えない【Clock】" };
 let clockHour = 8;
 let clockMinute = 0;
 let lastClockTrigger = null;
