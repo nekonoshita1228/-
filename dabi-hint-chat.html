@@ -1,0 +1,510 @@
+
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>謎解きラリー ヒント</title>
+
+<style>
+  :root{
+    --bg:#171b22;
+    --panel:#222a35;
+    --panel2:#2b3543;
+    --text:#f7f8fa;
+    --muted:#bac4d1;
+    --accent:#79ddff;
+    --line:#414d5e;
+  }
+
+  *{
+    box-sizing:border-box;
+  }
+
+  body{
+    margin:0;
+    height:100dvh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    background:
+      radial-gradient(circle at 15% 15%, rgba(121,221,255,.13), transparent 32%),
+      radial-gradient(circle at 85% 80%, rgba(121,221,255,.08), transparent 28%),
+      var(--bg);
+    color:var(--text);
+    font-family:
+      -apple-system, BlinkMacSystemFont, "Segoe UI",
+      "Hiragino Kaku Gothic ProN", "Yu Gothic", Meiryo, sans-serif;
+  }
+
+  .app{
+    width:min(100%, 600px);
+    flex:1 1 0;
+    min-height:0;
+    margin:0 auto;
+    background:rgba(23,27,34,.94);
+    display:flex;
+    flex-direction:column;
+  }
+
+  header{
+    flex-shrink:0;
+    padding:17px 18px;
+    border-bottom:1px solid var(--line);
+    background:rgba(23,27,34,.97);
+  }
+
+  .title{
+    font-size:18px;
+    font-weight:700;
+    letter-spacing:.04em;
+  }
+
+  .status{
+    margin-top:5px;
+    font-size:13px;
+    color:var(--muted);
+  }
+
+  #chat{
+    flex:1 1 0;
+    min-height:0;
+    padding:20px 16px;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .row{
+    display:flex;
+    margin:14px 0;
+    animation:pop .2s ease-out both;
+  }
+
+  .row.system{
+    justify-content:flex-start;
+  }
+
+  .row.user{
+    justify-content:flex-end;
+  }
+
+  .bubble{
+    width:fit-content;
+    max-width:94%;
+    padding:13px 16px;
+    line-height:1.8;
+    border-radius:17px;
+    font-size:16px;
+    white-space:pre-wrap;
+    overflow-wrap:anywhere;
+    word-break:normal;
+  }
+
+  .system .bubble{
+    background:var(--panel2);
+    border:1px solid var(--line);
+    border-bottom-left-radius:5px;
+  }
+
+  .user .bubble{
+    background:#19445a;
+    border:1px solid #39718d;
+    border-bottom-right-radius:5px;
+  }
+
+  .speaker{
+    font-size:13px;
+    color:var(--muted);
+    margin:0 0 6px 5px;
+  }
+
+  .composer-wrap{
+    position:relative;
+    flex-shrink:0;
+    width:100%;
+    padding:12px 14px calc(12px + env(safe-area-inset-bottom));
+    background:#171b22;
+    border-top:1px solid var(--line);
+  }
+
+  .composer{
+    display:flex;
+    gap:9px;
+    align-items:center;
+  }
+
+  input{
+    flex:1;
+    min-width:0;
+    height:50px;
+    border:1px solid var(--line);
+    border-radius:14px;
+    background:#202630;
+    color:var(--text);
+    padding:0 15px;
+    font-size:16px;
+    outline:none;
+  }
+
+  input:focus{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(121,221,255,.12);
+  }
+
+  button{
+    height:50px;
+    padding:0 19px;
+    border:0;
+    border-radius:14px;
+    background:var(--accent);
+    color:#07151c;
+    font-weight:800;
+    cursor:pointer;
+    font-size:15px;
+  }
+
+  button:disabled{
+    opacity:.45;
+    cursor:default;
+  }
+
+  .hint{
+    margin-top:9px;
+    font-size:12px;
+    color:var(--muted);
+    text-align:center;
+  }
+
+  @keyframes pop{
+    from{opacity:0; transform:translateY(5px)}
+    to{opacity:1; transform:translateY(0)}
+  }
+
+  @media (min-width:700px){
+    body{
+      padding:24px 0;
+    }
+
+    .app{
+      flex:1 1 0;
+      min-height:0;
+      border:1px solid var(--line);
+      border-radius:24px 24px 0 0;
+      overflow:hidden;
+      box-shadow:0 28px 80px rgba(0,0,0,.35);
+    }
+
+    .composer-wrap{
+      width:min(100%, 600px);
+      border-left:1px solid var(--line);
+      border-right:1px solid var(--line);
+      border-bottom:1px solid var(--line);
+      border-bottom-left-radius:24px;
+      border-bottom-right-radius:24px;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="app">
+  <header>
+    <div class="title">Dischat 荼毘</div>
+    <div class="status">ヒント専用チャット / 会話はいつまでも続けられます</div>
+  </header>
+
+  <main id="chat" aria-live="polite"></main>
+</div>
+
+<div class="composer-wrap">
+  <form class="composer" id="chatForm">
+    <input
+      id="message"
+      type="text"
+      autocomplete="off"
+      autocapitalize="off"
+      spellcheck="false"
+      placeholder="荼毘に話しかける"
+      aria-label="メッセージ"
+    >
+    <button id="sendBtn" type="submit">送信</button>
+  </form>
+
+  <div class="hint">
+    荼毘に話しかけてヒントをもらいましょう。会話もしてくれるかも！
+  </div>
+</div>
+
+<script>
+  // ============================================
+  // 荼毘との会話設定
+  // ============================================
+
+  // 最初に表示される会話
+  const INTRO_MESSAGES = [
+    "どうした、ナンバーツー",
+    "群訝山荘の会員パスワードがわからないって？",
+    "まァ、少しくらいなら付き合ってやるよ"
+  ];
+
+  // 特定の言葉に反応する台詞
+  // words に複数の言葉を登録できます。
+  // 上から順番に判定され、最初に一致した返答が出ます。
+
+  const KEYWORD_REPLIES = [
+{
+  words: ["ヒント1-1"],
+  replies: [
+    "【ヒント1-1】客室の写真をよく見ろ。"
+      ]
+},
+
+ { words: ["ヒント1-2"],
+  replies: [
+    "【ヒント1-1】客室の写真をよく見ろ。"
+      ]
+},
+
+ { words: ["ヒント1-1"],
+  replies: [
+    "【ヒント1-1】客室の写真をよく見ろ。"
+      ]
+},
+
+ { words: ["ヒント"],
+  replies: [
+　 "ヒントがほしいなら言え。問題１つにつき３つヒントが用意されている。たとえば第一パスワードのヒントなら「ヒント11」、「ヒント12」、「ヒント13」で全て得られる。同じく第二パスワードなら「ヒント21」、「ヒント22」……と話しかけりゃいい" ]
+},
+
+  {words: ["時計", "時間"],
+  replies: [
+    "時間なァ。お前はスマホで確認してたっけ？"
+  ]
+},
+
+    {
+      words: ["かわいい", "かぁいい"],
+      replies: [ "かぁいい、かぁいい。……これでいいか？" ]
+    },
+
+    {
+      words: ["群訝山荘", "山荘", "宿"],
+      replies: [
+        "山ン中にある宿だよ。和歌山のあたりにあるんだと",
+        "なんで探させてるかって？　楽しい旅行の宿探しだよ",
+        "公式サイトをくまなく調べてみろ。それが謎を解くカギだ"
+      ]
+    },
+
+    {
+      words: ["ホークス", "ナンバーツー"],
+      replies: [
+        "そういやお前、本名を公表してねえんだな。親しみが湧くよ",
+        "見たぜ、ビルボ発表会のクソみてえな茶番劇。お前がナンバーワンだったよ"
+      ]
+    },
+
+    {
+      words: ["荼毘"],
+      replies: [
+        "俺はとっくに荼毘に付した人間なんだ。だから荼毘で通してる",
+        "お前からの頼みは聞けねえな。まずは自分で調べてくれよ",
+        "話し相手がほしいだけなら他をあたれ。暇じゃねェんだ"
+      ]
+    },
+
+    {
+      words: ["羽", "翼"],
+      replies: [
+        "お前の羽を誰よりも上手く使ってやる",
+        "羽を伸ばしすぎだ、プロヒーロー",
+        "飛ぶのは嫌いじゃねえよ"
+      ]
+    },
+
+    {
+      words: ["会社", "管理会社", "サポートアイテム"],
+      replies: [
+        "たしかサポートアイテムの会社だったな",
+        "会社の名前か。手がかりを見落としてねえか？",
+        "山荘を管理してる会社だろ。宿の情報をよく見てみろ"
+      ]
+    },
+
+    {
+      words: ["デトラネット", "デトラネット社"],
+      replies: [
+        "間違えたまま覚えて正すことができねえ奴っているよな",
+        "文字をよく見ろ。",
+        "知らねえ会社だ。サポートアイテムもすぐ壊れそうだな"
+      ]
+    },
+
+    {
+      words: ["ヒント", "わからない", "分からない", "助けて"],
+      replies: [
+        "焦るな。手がかりはもう見てるはずだ",
+        "一度、最初から情報を整理してみろ",
+        "よく見ろ。どうせ見過ごしてんだよ。……あいつみてえにな",
+        "ヒントがほしいなら、どこで詰まってるか教えろよ"
+      ]
+    },
+
+    {
+      words: ["ありがとう", "ありがと"],
+      replies: [
+        "礼なんかいらねえよ",
+        "……別に",
+        "どういたしまして。期待してるよ、ナンバーツー"
+      ]
+    },
+
+    {
+      words: ["こんにちは", "こんばんは", "おはよう"],
+      replies: [
+        "ああ、どうした？　挨拶を躾けられた鳥みてえだ",
+        "通知がうるせえんだよ……俺は寝る。当分起こすな",
+        "元気そうだな"
+      ]
+    },
+
+    {
+      words: ["好き", "大好き"],
+      replies: [
+        "物好きな奴だな",
+        "俺は蕎麦。",
+        "俺も好きだよ。どうするつもりだ"
+      ]
+    }
+
+  ];
+
+  // どのキーワードにも当てはまらないときの返答
+  // ここを増やすと、会話の幅が広がります。
+
+  const GENERAL_REPLIES = [
+    "……で？",
+    "そうかよ",
+    "ふうん",
+    "それで、何が言いてえんだ",
+    "それを俺に話してどうする。リーダーに伝えてくれってか？",
+    "わかったよ。あとはミスターに言ってくれ",
+    "へえ。続きはイカレ女に聞いてもらえよ",
+    "お前、よく喋るな。トゥワイスみてえだ",
+    "酔った……あのトカゲ野郎",
+    "今の話、もう少し詳しく聞かせろ",
+    "ふわあ……で、なんだって？",
+    "寒いな。何か燃やすか"
+  ];
+
+  // ============================================
+  // ここから下は会話の動作です
+  // 通常は変更しなくて大丈夫です
+  // ============================================
+
+  const chat = document.getElementById("chat");
+  const form = document.getElementById("chatForm");
+  const input = document.getElementById("message");
+  const sendBtn = document.getElementById("sendBtn");
+
+  function normalize(text){
+    return text
+      .trim()
+      .toLowerCase()
+      .normalize("NFKC")
+      .replace(/\s+/g, "");
+  }
+
+  function addBubble(text, type="system"){
+    const row = document.createElement("div");
+    row.className = `row ${type}`;
+
+    const wrap = document.createElement("div");
+
+    if(type === "system"){
+      const speaker = document.createElement("div");
+      speaker.className = "speaker";
+      speaker.textContent = "荼毘";
+      wrap.appendChild(speaker);
+    }
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble";
+    bubble.textContent = text;
+
+    wrap.appendChild(bubble);
+    row.appendChild(wrap);
+    chat.appendChild(row);
+
+    scrollToBottom();
+  }
+
+  function scrollToBottom(){
+    requestAnimationFrame(() => {
+      chat.scrollTo({
+        top: chat.scrollHeight,
+        behavior: "smooth"
+      });
+    });
+  }
+
+  function wait(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  function chooseReply(replies){
+    return replies[Math.floor(Math.random() * replies.length)];
+  }
+
+  function getReply(raw){
+    const normalizedMessage = normalize(raw);
+
+    const matched = KEYWORD_REPLIES.find(item => {
+      return item.words.some(word =>
+        normalizedMessage.includes(normalize(word))
+      );
+    });
+
+    if(matched){
+      return chooseReply(matched.replies);
+    }
+
+    return chooseReply(GENERAL_REPLIES);
+  }
+
+  async function showIntro(){
+    for(const msg of INTRO_MESSAGES){
+      await wait(500);
+      addBubble(msg);
+    }
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const raw = input.value.trim();
+    if(!raw) return;
+
+    addBubble(raw, "user");
+
+    input.value = "";
+    sendBtn.disabled = true;
+    input.disabled = true;
+
+    await wait(500);
+
+    const reply = getReply(raw);
+    addBubble(reply);
+
+    sendBtn.disabled = false;
+    input.disabled = false;
+    input.focus();
+  });
+
+  showIntro();
+</script>
+
+</body>
+</html>
